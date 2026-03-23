@@ -1,10 +1,10 @@
 /**
- * Sous-projet : persistence
- * Artefact    : dev.jhipster.persistence
+ * Subproject: persistence
+ * Artifact  : dev.jhipster.persistence
  *
- * Plugin léger — aucune dépendance LangChain4j, Docker, pgvector ou MCP.
- * Le convention plugin `jhipster.gradle-plugin-conventions` configure
- * Kotlin, Java, test et publication.
+ * Lightweight plugin — no LangChain4j, Docker, pgvector or MCP dependencies.
+ * The convention plugin `jhipster.gradle-plugin-conventions` configures
+ * Kotlin, Java, testing and publishing.
  */
 plugins {
     `java-library`
@@ -37,14 +37,15 @@ gradlePlugin {
             implementationClass = "dev.jhipster.persistence.JHipsterPersistencePlugin"
             displayName         = "JHipster Persistence Plugin"
             description         = """
-                Orchestre le cycle de régénération JHipster (clean/generate/sync)
-                sans perdre le code métier Kotlin persisté dans __codebase__/.
-                Résolution par convention — aucune extension DSL requise.
+                Orchestrates the JHipster regeneration cycle (clean/generate/sync)
+                without losing the Kotlin business code persisted in __codebase__/.
+                Convention-based resolution — no DSL extension required.
             """.trimIndent()
             tags = listOf("jhipster", "kotlin", "codegen", "persistence")
         }
     }
 }
+
 publishing {
     publications {
         withType<MavenPublication> {
@@ -92,6 +93,7 @@ publishing {
 }
 
 signing {
+    // Only sign release versions, not snapshots
     val isReleaseVersion = !version.toString().endsWith("-SNAPSHOT")
     if (isReleaseVersion) sign(publishing.publications)
     useGpgCmd()

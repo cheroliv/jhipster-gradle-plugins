@@ -10,19 +10,19 @@
 :rouge-style: github
 :imagesdir: docs/images
 :plantuml-server: https://www.plantuml.com/plantuml
-:persistence-plugin-id: com.cheroliv.jhipster.persistence
+:persistence-plugin-id: com.cheroliv.jhipster.peristence
 :assistant-plugin-id: com.cheroliv.jhipster.assistant
 
-Mono-repository containing two Gradle plugins for JHipster Kotlin projects.
-Each plugin is an independent artifact published separately on the Gradle Plugin Portal.
+Mono-dépôt contenant deux plugins Gradle pour les projets JHipster Kotlin.
+Chaque plugin est un artefact indépendant publié séparément sur le Gradle Plugin Portal.
 
 == Vision
 
-JHipster projects face a fundamental tension: the generator produces
-a complete codebase, but each regeneration overwrites everything — including
-hand-written business code.
-This repository solves that problem with two complementary plugins covering
-the entire lifecycle of a JHipster Kotlin project.
+Les projets JHipster subissent une tension fondamentale : le générateur produit
+une base de code complète, mais chaque régénération écrase tout — y compris
+le code métier écrit à la main.
+Ce dépôt résout ce problème avec deux plugins complémentaires qui couvrent
+l'ensemble du cycle de vie d'un projet JHipster Kotlin.
 
 [plantuml, vision-overview, svg]
 ....
@@ -67,15 +67,15 @@ package "jhipster-gradle-plugins" {
 }
 
 note bottom of persistence
-  **Stable — ready to publish**
-  No complex AI/Docker dependencies
-  Requirements: JDK 25, nvm, jhipster CLI
+  **Stable — publiable maintenant**
+  Aucune dépendance IA/Docker complexe
+  Prérequis : JDK 24, nvm, jhipster CLI
 end note
 
 note bottom of assistant
-  **SNAPSHOT — future development**
+  **SNAPSHOT — développement futur**
   LangChain4j + pgvector + MCP SDK
-  Enable when codebase is mature
+  Activer quand la base de code est dense
 end note
 
 @enduml
@@ -83,27 +83,27 @@ end note
 
 == Plugins
 
-=== `com.cheroliv.jhipster.persistence`  ✅ stable
+=== `dev.jhipster.persistence`  ✅ stable
 
-Orchestrates the clean → generate → sync cycle of a JHipster project
-without losing the Kotlin business code persisted in `__codebase__/`.
+Orchestre le cycle clean → generate → sync d'un projet JHipster
+sans perdre le code métier Kotlin persisté dans `__codebase__/`.
 
 [source,kotlin]
 ----
 // workspace/build.gradle.kts
 plugins {
-    id("com.cheroliv.jhipster.persistence") version "0.0.0"
+    id("dev.jhipster.persistence") version "1.0.0"
 }
 ----
 
-> No DSL configuration required — everything resolved by convention.
+> Aucune configuration DSL requise — tout résolu par convention.
 
-=== `com.cheroliv.jhipster.assistant`  🚧 SNAPSHOT
+=== `dev.jhipster.assistant`  🚧 SNAPSHOT
 
-Code assistance via RAG pgvector, multi-provider LLM and MCP server.
-Not published — development will start after `persistence` is stable.
+Assistance au code via RAG pgvector, LLM multi-provider et serveur MCP.
+Non publié — développement démarrera après stabilisation de `persistence`.
 
-== Repository Structure
+== Structure du dépôt
 
 [plantuml, repo-structure, svg]
 ....
@@ -123,8 +123,9 @@ skinparam file {
 
 folder "jhipster-gradle-plugins/" {
   file "settings.gradle.kts\n<size:9>include persistence, assistant</size>"
+  file "build.gradle.kts\n<size:9>conventions communes</size>"
   folder "gradle/" {
-    file "libs.versions.toml\n<size:9>shared catalog</size>"
+    file "libs.versions.toml\n<size:9>catalog partagé</size>"
   }
   folder "persistence/" #D5F5E3 {
     file "build.gradle.kts"
@@ -141,21 +142,22 @@ folder "jhipster-gradle-plugins/" {
 [source]
 ----
 jhipster-gradle-plugins/
-├── settings.gradle.kts          <- include("persistence", "assistant")
+├── settings.gradle.kts          ← include("persistence", "assistant")
+├── build.gradle.kts             ← conventions communes (toolchain, test, publish)
 ├── gradle/
-│   └── libs.versions.toml       <- shared catalog, separate versions per plugin
-├── persistence/                 <- com.cheroliv.jhipster.persistence (lightweight)
+│   └── libs.versions.toml       ← catalog partagé, versions séparées par plugin
+├── persistence/                 ← dev.jhipster.persistence (léger)
 │   ├── build.gradle.kts
 │   └── src/
-└── assistant/                   <- com.cheroliv.jhipster.assistant (SNAPSHOT)
+└── assistant/                   ← dev.jhipster.assistant (SNAPSHOT)
     ├── build.gradle.kts
     └── src/
 ----
 
-== Dependency Boundary
+== Séparation des dépendances
 
-The Gradle module boundary physically guarantees that `persistence`
-cannot accidentally pull in a LangChain4j or Docker dependency.
+La frontière de module Gradle garantit physiquement que `persistence`
+ne peut pas tirer une dépendance LangChain4j ou Docker accidentellement.
 
 [plantuml, dependency-boundary, svg]
 ....
@@ -186,37 +188,37 @@ rectangle "assistant classpath" as assistant #D6EAF8 {
 }
 
 note right of persistence
-  **Final jar: ~50 KB**
-  Dependencies: 3
-  Resolution time: < 5s
+  **Jar final : ~50 Ko**
+  Dépendances : 3
+  Temps de résolution : < 5s
 end note
 
 note right of assistant
-  **Final jar: ~500 KB + ONNX model**
-  Dependencies: 40+
-  Resolution time: > 30s
+  **Jar final : ~500 Ko + modèle ONNX**
+  Dépendances : 40+
+  Temps de résolution : > 30s
 end note
 
 @enduml
 ....
 
-== Root Commands
+== Commandes racine
 
 [source,bash]
 ----
-# Build and test both modules
+# Compiler et tester les deux modules
 ./gradlew check
 
-# Persistence only
+# Persistence uniquement
 ./gradlew :persistence:check
 
-# Publish persistence to the Gradle Plugin Portal
+# Publier persistence sur le Gradle Plugin Portal
 ./gradlew :persistence:publishPlugins
 
-# Local publication (Maven repository in build/local-repo)
+# Publication locale (dépôt Maven dans build/local-repo)
 ./gradlew :persistence:publishToMavenLocal
 
-# Assistant only (SNAPSHOT, not published)
+# Assistant uniquement (SNAPSHOT, non publié)
 ./gradlew :assistant:check
 ----
 
@@ -224,39 +226,39 @@ end note
 
 [cols="2,1,1", options="header"]
 |===
-| Plugin | Version | Status
+| Plugin | Version | Statut
 
 | `{persistence-plugin-id}`
 | `0.0.0`
-| ✅ Published
+| ✅ Publiable
 
 | `{assistant-plugin-id}`
 | `0.0.0-SNAPSHOT`
-| 🚧 Future development
+| 🚧 Développement futur
 |===
 
-== Requirements
+== Prérequis
 
 [cols="2,3", options="header"]
 |===
-| Requirement | Details
+| Prérequis | Détail
 
-| JDK 25+
-| Gradle toolchain configured automatically
+| JDK 24+
+| Toolchain Gradle configurée automatiquement
 
 | nvm + Node 22
-| Alias `lts/jod` required by `generateJdl`
+| Alias `lts/jod` requis par `generateJdl`
 
 | JHipster CLI
 | `npm install -g generator-jhipster`
 
 | Docker + Compose v2
-| Required for `dockerDb`, `dockerUp`, `dev`
+| Pour les tâches `dockerDb`, `dockerUp`, `dev`
 
-| rsync (optional)
-| Native Java fallback if absent
+| rsync (optionnel)
+| Fallback Java natif si absent
 |===
 
-== License
+== Licence
 
-This project is licensed under Apache-2.0 — see the `LICENSE` file.
+This project is licensed under Apache‑2.0 — see the `LICENSE` file.

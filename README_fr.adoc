@@ -24,62 +24,7 @@ le code métier écrit à la main.
 Ce dépôt résout ce problème avec deux plugins complémentaires qui couvrent
 l'ensemble du cycle de vie d'un projet JHipster Kotlin.
 
-[plantuml, vision-overview, svg]
-....
-@startuml
-skinparam backgroundColor #FEFEFE
-skinparam defaultFontName "DejaVu Sans"
-skinparam defaultFontSize 12
-
-skinparam package {
-  BackgroundColor #EBF5FB
-  BorderColor     #2E86C1
-  FontStyle       bold
-}
-
-skinparam component {
-  BackgroundColor #FDFEFE
-  BorderColor     #2E86C1
-}
-
-skinparam note {
-  BackgroundColor #FEF9E7
-  BorderColor     #F39C12
-}
-
-package "jhipster-gradle-plugins" {
-
-  package "persistence" as persistence {
-    [cleanCodebase]   #D5F5E3
-    [generateJdl]     #D5F5E3
-    [syncCodebase]    #D5F5E3
-    [regenerate]      #A9DFBF
-    [dockerDb]        #D5F5E3
-    [dev]             #D5F5E3
-  }
-
-  package "assistant — SNAPSHOT" as assistant {
-    [chat]            #D6EAF8
-    [searchCode RAG]  #D6EAF8
-    [MCP Server]      #D6EAF8
-    [reindexCodebase] #D6EAF8
-  }
-}
-
-note bottom of persistence
-  **Stable — publiable maintenant**
-  Aucune dépendance IA/Docker complexe
-  Prérequis : JDK 24, nvm, jhipster CLI
-end note
-
-note bottom of assistant
-  **SNAPSHOT — développement futur**
-  LangChain4j + pgvector + MCP SDK
-  Activer quand la base de code est dense
-end note
-
-@enduml
-....
+image::/.github/workflows/readmes/images/fr/vision-overview.png[vision-overview]
 
 == Plugins
 
@@ -105,39 +50,7 @@ Non publié — développement démarrera après stabilisation de `persistence`.
 
 == Structure du dépôt
 
-[plantuml, repo-structure, svg]
-....
-@startuml
-skinparam backgroundColor #FEFEFE
-skinparam defaultFontName "DejaVu Sans"
-
-skinparam folder {
-  BackgroundColor #EBF5FB
-  BorderColor     #2E86C1
-}
-
-skinparam file {
-  BackgroundColor #FDFEFE
-  BorderColor     #85929E
-}
-
-folder "jhipster-gradle-plugins/" {
-  file "settings.gradle.kts\n<size:9>include persistence, assistant</size>"
-  file "build.gradle.kts\n<size:9>conventions communes</size>"
-  folder "gradle/" {
-    file "libs.versions.toml\n<size:9>catalog partagé</size>"
-  }
-  folder "persistence/" #D5F5E3 {
-    file "build.gradle.kts"
-    folder "src/main/kotlin/\ndev/jhipster/persistence/"
-  }
-  folder "assistant/" #D6EAF8 {
-    file "build.gradle.kts"
-    folder "src/main/kotlin/\ndev/jhipster/assistant/"
-  }
-}
-@enduml
-....
+image::/.github/workflows/readmes/images/fr/repo-structure.png[repo-structure]
 
 [source]
 ----
@@ -159,48 +72,7 @@ jhipster-gradle-plugins/
 La frontière de module Gradle garantit physiquement que `persistence`
 ne peut pas tirer une dépendance LangChain4j ou Docker accidentellement.
 
-[plantuml, dependency-boundary, svg]
-....
-@startuml
-skinparam backgroundColor #FEFEFE
-skinparam defaultFontName "DejaVu Sans"
-skinparam defaultFontSize 11
-
-skinparam rectangle {
-  FontStyle bold
-}
-
-rectangle "persistence classpath" as persistence #D5F5E3 {
-  (kotlin-stdlib) as ks1
-  (gradle-api)
-  (junit-jupiter) as jj1
-}
-
-rectangle "assistant classpath" as assistant #D6EAF8 {
-  (kotlin-stdlib) as ks2
-  (langchain4j-core)
-  (langchain4j-pgvector)
-  (docker-java)
-  (mcp-sdk)
-  (ktor-server)
-  (junit-jupiter) as jj2
-  (testcontainers)
-}
-
-note right of persistence
-  **Jar final : ~50 Ko**
-  Dépendances : 3
-  Temps de résolution : < 5s
-end note
-
-note right of assistant
-  **Jar final : ~500 Ko + modèle ONNX**
-  Dépendances : 40+
-  Temps de résolution : > 30s
-end note
-
-@enduml
-....
+image::/.github/workflows/readmes/images/fr/dependency-boundary.png[dependency-boundary]
 
 == Commandes racine
 

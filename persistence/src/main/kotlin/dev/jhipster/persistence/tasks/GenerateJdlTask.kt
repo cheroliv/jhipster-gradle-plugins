@@ -144,10 +144,10 @@ abstract class GenerateJdlTask : DefaultTask() {
         buildGradle.appendText("""
 
 $marker
-kotlin.jvmToolchain(17)
+kotlin.jvmToolchain(24)
 kotlin.compilerOptions.freeCompilerArgs.addAll("-Xjsr305=strict")
 """)
-        logger.lifecycle("    ✓ build.gradle : jvmToolchain(17) injecté")
+        logger.lifecycle("    ✓ build.gradle : jvmToolchain(24) injecté")
     }
 
     private fun patchBuildSrc(projectDir: File, kotlinVersion: String) {

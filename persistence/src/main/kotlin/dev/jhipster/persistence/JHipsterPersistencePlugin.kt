@@ -182,5 +182,6 @@ class JHipsterPersistencePlugin : Plugin<Project> {
         const val GROUP          = "jhipster-persistence"
         const val NVM_ALIAS      = "lts/jod"
         const val KOTLIN_VERSION = "2.3.20"
+        const val JAVA_VERSION   = 24
     }
 }

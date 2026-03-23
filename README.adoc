@@ -261,4 +261,4 @@ end note
 
 == Licence
 
-Apache 2.0 — voir `LICENSE`.
+This project is licensed under Apache‑2.0 — see the `LICENSE` file.

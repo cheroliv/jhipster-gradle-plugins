@@ -10,6 +10,8 @@
 :rouge-style: github
 :imagesdir: docs/images
 :plantuml-server: https://www.plantuml.com/plantuml
+:persistence-plugin-id: com.cheroliv.jhipster.peristence
+:assistant-plugin-id: com.cheroliv.jhipster.assistant
 
 Mono-dépôt contenant deux plugins Gradle pour les projets JHipster Kotlin.
 Chaque plugin est un artefact indépendant publié séparément sur le Gradle Plugin Portal.
@@ -226,12 +228,12 @@ end note
 |===
 | Plugin | Version | Statut
 
-| `dev.jhipster.persistence`
-| `1.0.0`
+| `{persistence-plugin-id}`
+| `0.0.0`
 | ✅ Publiable
 
-| `dev.jhipster.assistant`
-| `0.1.0-SNAPSHOT`
+| `{assistant-plugin-id}`
+| `0.0.0-SNAPSHOT`
 | 🚧 Développement futur
 |===
 
@@ -241,7 +243,7 @@ end note
 |===
 | Prérequis | Détail
 
-| JDK 17+
+| JDK 24+
 | Toolchain Gradle configurée automatiquement
 
 | nvm + Node 22

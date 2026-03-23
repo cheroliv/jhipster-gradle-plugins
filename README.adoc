@@ -49,7 +49,7 @@ skinparam note {
 
 package "jhipster-gradle-plugins" {
 
-  package "persistence\n<size:10>dev.jhipster.persistence</size>" {
+  package "persistence" as persistence {
     [cleanCodebase]   #D5F5E3
     [generateJdl]     #D5F5E3
     [syncCodebase]    #D5F5E3
@@ -58,7 +58,7 @@ package "jhipster-gradle-plugins" {
     [dev]             #D5F5E3
   }
 
-  package "assistant\n<size:10>dev.jhipster.assistant</size>\n<size:9>— SNAPSHOT —</size>" {
+  package "assistant — SNAPSHOT" as assistant {
     [chat]            #D6EAF8
     [searchCode RAG]  #D6EAF8
     [MCP Server]      #D6EAF8
@@ -69,7 +69,7 @@ package "jhipster-gradle-plugins" {
 note bottom of persistence
   **Stable — publiable maintenant**
   Aucune dépendance IA/Docker complexe
-  Prérequis : JDK 17, nvm, jhipster CLI
+  Prérequis : JDK 24, nvm, jhipster CLI
 end note
 
 note bottom of assistant
@@ -170,13 +170,13 @@ skinparam rectangle {
   FontStyle bold
 }
 
-rectangle "persistence classpath" #D5F5E3 {
-  (kotlin-stdlib)
+rectangle "persistence classpath" as persistence #D5F5E3 {
+  (kotlin-stdlib) as ks1
   (gradle-api)
-  (junit-jupiter)
+  (junit-jupiter) as jj1
 }
 
-rectangle "assistant classpath" #D6EAF8 {
+rectangle "assistant classpath" as assistant #D6EAF8 {
   (kotlin-stdlib) as ks2
   (langchain4j-core)
   (langchain4j-pgvector)

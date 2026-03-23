@@ -1,0 +1,831 @@
+= JHipster Persistence Plugin
+:author: cheroliv
+:revdate: {docdate}
+:doctype: book
+:icons: font
+:toc: left
+:toclevels: 3
+:sectnums:
+:source-highlighter: rouge
+:rouge-style: github
+:plugin-id: dev.jhipster.persistence
+:plugin-version: 0.0.0
+
+Plugin Gradle qui résout le problème fondamental du cycle JHipster :
+régénérer le projet depuis un fichier JDL sans perdre le code métier Kotlin.
+
+== Le problème
+
+JHipster est un générateur d'applications Spring Boot full-stack.
+Sa puissance réside dans la régénération depuis un fichier `.jdl` —
+mais chaque régénération écrase l'intégralité du projet,
+y compris le code métier écrit à la main.
+
+[plantuml, problem-statement, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+
+skinparam activity {
+  BackgroundColor #FDFEFE
+  BorderColor     #2E86C1
+  FontSize        11
+}
+
+|Développeur|
+start
+:Modifie **edster.jdl**\n(nouvelle entité, relation…);
+:Lance **jhipster jdl --force**;
+
+|JHipster CLI|
+:Régénère **tout** le projet;
+
+|Développeur|
+if (Code métier survit ?) then (❌ non)
+  #FADBD8 :Perte irrémédiable\ndu code métier Kotlin !;
+  :Réécrire manuellement\nles services, repos, tests…;
+else (✅ avec le plugin)
+  #D5F5E3 :__codebase__/ intact\nRésynchronisation automatique;
+  :Continuer à développer;
+endif
+stop
+
+@enduml
+....
+
+== La solution : `__codebase__/`
+
+Le plugin introduit un répertoire sanctuaire `__codebase__/` à la racine du
+projet JHipster. Tout le code métier Kotlin y est persisté.
+Après chaque régénération, le plugin rsync `__codebase__/` vers le projet
+régénéré — en quelques secondes, le projet est à nouveau complet.
+
+[plantuml, solution-overview, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+
+skinparam database {
+  BackgroundColor #D5F5E3
+  BorderColor     #27AE60
+}
+
+skinparam folder {
+  BackgroundColor #EBF5FB
+  BorderColor     #2E86C1
+}
+
+skinparam component {
+  BackgroundColor #FDFEFE
+  BorderColor     #2E86C1
+}
+
+database "__codebase__/" as cb {
+  [build.gradle]
+  [gradle/libs.versions.toml]
+  [src/ — code métier Kotlin]
+  [buildSrc/]
+  [.github/]
+}
+
+folder "edster/ (projet JHipster)" as jhp {
+  [src/ — généré + métier]
+  [build.gradle — patché]
+  [gradle/]
+  [edster.jdl]
+}
+
+note top of cb
+  **Sanctuaire du code métier**
+  Jamais écrasé par JHipster
+  Versionné indépendamment
+end note
+
+[syncCodebase] -right-> jhp : rsync\n__codebase__/ → projet
+cb -right-> [syncCodebase]
+
+@enduml
+....
+
+== Installation
+
+=== Prérequis système
+
+[cols="2,3", options="header"]
+|===
+| Prérequis | Détail
+
+| JDK 17+
+| Toolchain configurée automatiquement par le plugin
+
+| nvm
+| Installé dans `~/.nvm` avec l'alias `lts/jod` (Node 22)
+
+| JHipster CLI
+| `npm install -g generator-jhipster`
+
+| Docker + Compose v2
+| Pour `dockerDb`, `dockerUp`, `dev`
+
+| rsync
+| Optionnel — fallback Java natif si absent (cross-platform)
+|===
+
+=== Structure du workspace attendue
+
+[plantuml, workspace-structure, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 11
+
+skinparam folder {
+  BackgroundColor #EBF5FB
+  BorderColor     #2E86C1
+}
+skinparam file {
+  BackgroundColor #FDFEFE
+  BorderColor     #85929E
+}
+
+folder "workspace/  ← applique le plugin" #FEF9E7 {
+  file "build.gradle.kts"
+  file "settings.gradle.kts"
+
+  folder "edster/  ← projet JHipster (détecté via .yo-rc.json)" {
+    file ".yo-rc.json  ← marqueur JHipster"
+    file "edster.jdl"
+
+    folder "__codebase__/  ← sanctuaire code métier" #D5F5E3 {
+      file "build.gradle"
+      folder "gradle/" {
+        file "libs.versions.toml"
+      }
+      folder "src/" {
+        folder "main/kotlin/..."
+        folder "test/kotlin/..."
+      }
+      folder "buildSrc/"
+      folder ".github/"
+    }
+
+    folder "src/main/docker/" {
+      file "docker-compose.yml"
+      file "postgresql.yml"
+    }
+  }
+}
+@enduml
+....
+
+=== Déclaration dans le workspace
+
+[source,kotlin]
+----
+// workspace/build.gradle.kts
+plugins {
+    id("dev.jhipster.persistence") version "1.0.0"
+}
+----
+
+[source,kotlin]
+----
+// workspace/settings.gradle.kts
+rootProject.name = "workspace"
+----
+
+TIP: Aucune configuration DSL supplémentaire.
+Le plugin résout tout par convention depuis la position du workspace.
+
+== Résolution automatique du projet cible
+
+Le plugin localise le projet JHipster par **convention stricte**,
+sans aucune configuration explicite.
+
+[plantuml, project-resolution, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 11
+
+skinparam activity {
+  BackgroundColor #FDFEFE
+  BorderColor     #2E86C1
+  FontSize        11
+}
+
+start
+
+:Récupère le dossier parent\ndu projet workspace;
+
+:Liste les sous-dossiers frères\n(excluant le workspace lui-même);
+
+if (Un frère contient\n**.yo-rc.json** ?) then (✅ oui)
+  #D5F5E3 :Utilise ce dossier\ncomme projet JHipster cible;
+else (❌ non)
+  if (Un frère contient\n**build.gradle(.kts)** ?) then (✅ oui)
+    #FEF9E7 :Utilise ce dossier\n(fallback sans .yo-rc.json);
+  else (❌ non)
+    #FADBD8 :Erreur explicite —\naucun projet JHipster trouvé;
+    stop
+  endif
+endif
+
+:Instancie **ProjectConventions**\navec le dossier résolu;
+
+:Enregistre les tâches\ndu groupe **jhipster-persistence**;
+
+stop
+@enduml
+....
+
+== Conventions de chemins (`ProjectConventions`)
+
+[cols="2,3", options="header"]
+|===
+| Propriété | Chemin résolu
+
+| `codebaseDir`
+| `<projet>/__codebase__/`
+
+| `jdlFile`
+| `<projet>/<nom-du-projet>.jdl`
+
+| `dockerDir`
+| `<projet>/src/main/docker/`
+
+| `dockerDbFile`
+| `postgresql.yml` ou `postgres.yml` (premier trouvé)
+
+| `dockerComposeFile`
+| `docker-compose.yml` ou `app.yml` (premier trouvé)
+|===
+
+== Tâches
+
+=== Vue d'ensemble
+
+[plantuml, tasks-overview, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 11
+
+skinparam usecase {
+  BackgroundColor #FDFEFE
+  BorderColor     #2E86C1
+}
+skinparam actor {
+  BackgroundColor #EBF5FB
+}
+
+left to right direction
+
+actor Développeur as dev
+
+rectangle "jhipster-persistence" {
+  usecase "regenerate\n<size:9>pipeline complet</size>"              as regenerate #A9DFBF
+  usecase "cleanCodebase\n<size:9>supprime artefacts générés</size>" as clean      #D5F5E3
+  usecase "generateJdl\n<size:9>jhipster jdl --force</size>"        as generate   #D5F5E3
+  usecase "syncCodebase\n<size:9>rsync __codebase__/</size>"        as sync       #D5F5E3
+  usecase "dockerDb\n<size:9>PostgreSQL uniquement</size>"           as dockerDb   #D6EAF8
+  usecase "dockerUp\n<size:9>stack complète</size>"                  as dockerUp   #D6EAF8
+  usecase "dockerDown\n<size:9>stop tous services</size>"            as dockerDown #D6EAF8
+  usecase "dev\n<size:9>dockerDb + bootRun</size>"                   as dev2       #FEF9E7
+}
+
+dev --> regenerate
+dev --> clean
+dev --> generate
+dev --> sync
+dev --> dockerDb
+dev --> dockerUp
+dev --> dockerDown
+dev --> dev2
+
+regenerate ..> clean   : inclut
+regenerate ..> generate : inclut
+regenerate ..> sync    : inclut
+dev2       ..> dockerDb : inclut
+
+@enduml
+....
+
+=== Référence des tâches
+
+[cols="2,1,3", options="header"]
+|===
+| Tâche | Groupe | Description
+
+| `regenerate`
+| `jhipster-persistence`
+| Pipeline complet : `cleanCodebase` → `generateJdl` → `syncCodebase`
+
+| `cleanCodebase`
+| `jhipster-persistence`
+| Supprime les répertoires et fichiers générés par JHipster (`.gradle/`, `build/`, `src/`, `node_modules/`, etc.)
+
+| `generateJdl`
+| `jhipster-persistence`
+| Lance `jhipster jdl <nom>.jdl --force` via nvm `lts/jod`. Applique les patches Kotlin post-génération.
+
+| `syncCodebase`
+| `jhipster-persistence`
+| Rsync `__codebase__/` → projet régénéré (`build.gradle`, `gradle/`, `src/`, `buildSrc/`, `.github/`). Fallback Java natif si rsync absent.
+
+| `dockerDb`
+| `jhipster-persistence`
+| `docker compose up -d` sur `postgresql.yml` (convention)
+
+| `dockerUp`
+| `jhipster-persistence`
+| `docker compose up -d` stack complète
+
+| `dockerDown`
+| `jhipster-persistence`
+| `docker compose down`
+
+| `dev`
+| `jhipster-persistence`
+| `dockerDb` puis `./gradlew bootRun` dans le projet JHipster cible
+|===
+
+== Cycle de vie
+
+=== Pipeline `regenerate`
+
+[plantuml, regenerate-pipeline, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+
+skinparam activity {
+  BackgroundColor #FDFEFE
+  BorderColor     #2E86C1
+  FontSize        11
+  DiamondBackgroundColor #FEF9E7
+  DiamondBorderColor     #F39C12
+}
+
+|Gradle|
+start
+:./gradlew regenerate;
+
+|cleanCodebase|
+#D5F5E3 :Supprime les dossiers générés\n.gradle/ build/ src/ node_modules/\nbuildSrc/ gradle/ webpack/ etc.;
+:Supprime les fichiers générés\nbuild.gradle gradlew package.json\n.gitignore .prettierrc etc.;
+note right
+  13 dossiers
+  27 fichiers
+  Équivalent : clean.sh
+end note
+
+|generateJdl|
+#EBF5FB :Charge nvm lts/jod (Node 22);
+:Copie edster.jdl dans le projet cible;
+:jhipster jdl edster.jdl --force;
+note right
+  Durée : 2–5 min
+  selon la taille du JDL
+end note
+:Patch .gitignore\n(ajout .goose, README.pdf…);
+:Patch libs.versions.toml\n(kotlin = "2.3.20");
+:Patch build.gradle\n(kotlin.jvmToolchain(17));
+:Patch buildSrc/build.gradle\n(kotlin-gradle-plugin version);
+
+|syncCodebase|
+#D5F5E3 :Nettoie build/ et .gradle/;
+:rsync __codebase__/build.gradle → ./build.gradle;
+:rsync __codebase__/gradle/      → ./gradle/;
+:rsync __codebase__/src/         → ./src/;
+:rsync __codebase__/.github/     → ./.github/;
+:rsync __codebase__/buildSrc/    → ./buildSrc/;
+note right
+  Fallback Java natif
+  si rsync absent
+end note
+
+|Gradle|
+#A9DFBF :✓ Projet JHipster régénéré\navec le code métier intact;
+stop
+
+@enduml
+....
+
+=== Flux `generateJdl` en détail
+
+[plantuml, generate-jdl-detail, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 11
+
+skinparam activity {
+  BackgroundColor #FDFEFE
+  BorderColor     #2E86C1
+  FontSize        11
+  DiamondBackgroundColor #FEF9E7
+  DiamondBorderColor     #F39C12
+}
+
+start
+
+:Vérifie existence du JDL;
+
+if (JDL présent ?) then (❌ non)
+  #FADBD8 :Erreur — JDL introuvable;
+  stop
+else (✅ oui)
+endif
+
+:Copie JDL dans le dossier cible\n(JHipster cherche le JDL dans son CWD);
+
+if (nvm disponible ?) then (✅ oui)
+  :source ~/.nvm/nvm.sh\nnvm use lts/jod;
+else (❌ non)
+  #FADBD8 :Erreur — nvm requis;
+  stop
+endif
+
+:jhipster jdl <nom>.jdl --force\n(process fils, héritage I/O);
+
+if (Succès ?) then (✅ oui)
+else (❌ non)
+  #FADBD8 :Erreur — JHipster a échoué;
+  stop
+endif
+
+:Patch .gitignore\n→ .goose, README.pdf/html/docx;
+
+:Patch gradle/libs.versions.toml\n→ kotlin = "2.3.20";
+
+:Patch build.gradle\n→ kotlin.jvmToolchain(17);
+
+if (buildSrc/build.gradle présent ?) then (✅ oui)
+  :Patch buildSrc/build.gradle\n→ kotlin-gradle-plugin:2.3.20;
+else (❌ non)
+  :Ignoré;
+endif
+
+#D5F5E3 :✓ generateJdl terminé;
+stop
+
+@enduml
+....
+
+=== Flux Docker
+
+[plantuml, docker-flow, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 11
+
+skinparam activity {
+  BackgroundColor #FDFEFE
+  BorderColor     #2E86C1
+  FontSize        11
+  DiamondBackgroundColor #FEF9E7
+  DiamondBorderColor     #F39C12
+}
+
+start
+
+if (Mode ?) then (UP_DB)
+  if (postgresql.yml ou postgres.yml\nexiste dans src/main/docker/ ?) then (✅ oui)
+    :docker compose -f postgresql.yml up -d;
+  else (❌ non)
+    if (service 'postgresql'\ndans docker-compose.yml ?) then (✅ oui)
+      :docker compose up -d postgresql;
+    else (❌ non)
+      #FADBD8 :Warn — aucun fichier\nPostgreSQL trouvé;
+    endif
+  endif
+else if (Mode ?) then (UP_ALL)
+  if (docker-compose.yml ou app.yml ?) then (✅ oui)
+    :docker compose -f <fichier> up -d;
+  else (❌ non)
+    #FADBD8 :Warn — compose file introuvable;
+  endif
+else (DOWN)
+  :docker compose -f <fichier> down;
+endif
+
+if (docker compose v2 disponible ?) then (✅ oui)
+  note right: "docker compose" (v2)
+else (❌ non)
+  note right: "docker-compose" (v1 fallback)
+endif
+
+stop
+@enduml
+....
+
+== États du plugin
+
+[plantuml, plugin-states, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+
+skinparam state {
+  BackgroundColor      #EBF5FB
+  BorderColor          #2E86C1
+  FontSize             11
+  ArrowColor           #2E86C1
+  StartColor           #2E86C1
+  EndColor             #2E86C1
+}
+
+[*] --> UNINITIALISED : projet cible\nnon encore créé
+
+state UNINITIALISED #FADBD8 {
+  note : workspace/ existe\nmais pas encore de\nprojet JHipster frère
+}
+
+UNINITIALISED --> READY : generateJdl\n(première génération)
+
+state READY #D5F5E3 {
+  note : .yo-rc.json présent\n__codebase__/ vide\nou non encore créé
+}
+
+READY --> CODEBASE_POPULATED : commits initiaux\ndu code métier dans\n__codebase__/
+
+state CODEBASE_POPULATED #A9DFBF {
+  note : état nominal\ncycle de développement actif
+}
+
+CODEBASE_POPULATED --> DIRTY : modification du JDL\nsans régénération
+
+state DIRTY #FEF9E7 {
+  note : JDL modifié\nprojet en désaccord\navec la réalité du JDL
+}
+
+DIRTY --> REGENERATING : ./gradlew regenerate
+
+state REGENERATING #D6EAF8 {
+  state "cleanCodebase" as cleaning
+  state "generateJdl"   as generating
+  state "syncCodebase"  as syncing
+  cleaning --> generating
+  generating --> syncing
+}
+
+REGENERATING --> CODEBASE_POPULATED : régénération\nréussie
+
+REGENERATING --> CONFLICT : sync échoue\n(conflit de fusion)
+
+state CONFLICT #FADBD8 {
+  note : rsync a rencontré\nun conflit\nrésolution manuelle requise
+}
+
+CONFLICT --> CODEBASE_POPULATED : résolution\nmanuelle + syncCodebase
+
+CODEBASE_POPULATED --> READY : reset de __codebase__/\n(cas exceptionnel)
+
+@enduml
+....
+
+== Utilisation courante
+
+=== Modifier le modèle de données
+
+[source,bash]
+----
+# 1. Éditer le fichier JDL
+vim edster/edster.jdl
+
+# 2. Régénérer (clean → generate → sync)
+./gradlew regenerate
+
+# 3. Démarrer en mode développement
+./gradlew dev
+----
+
+=== Synchroniser uniquement (sans régénérer)
+
+[source,bash]
+----
+# Après avoir modifié __codebase__/ manuellement
+./gradlew syncCodebase
+----
+
+=== Gérer Docker séparément
+
+[source,bash]
+----
+# Démarrer PostgreSQL uniquement
+./gradlew dockerDb
+
+# Démarrer toute la stack (PostgreSQL + Elasticsearch + etc.)
+./gradlew dockerUp
+
+# Arrêter tous les services
+./gradlew dockerDown
+----
+
+=== Workflow complet de développement
+
+[plantuml, dev-workflow, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 11
+
+skinparam sequence {
+  ArrowColor          #2E86C1
+  ActorBorderColor    #2E86C1
+  LifeLineBorderColor #2E86C1
+  ParticipantBackgroundColor #EBF5FB
+  ParticipantBorderColor     #2E86C1
+}
+
+actor Développeur as dev
+participant "workspace\n(plugin)" as ws
+participant "edster/\n(JHipster)" as jhp
+participant "Docker" as docker
+participant "__codebase__/" as cb
+
+dev -> ws : ./gradlew dev
+activate ws
+
+ws -> docker : docker compose up -d postgresql.yml
+activate docker
+docker --> ws : PostgreSQL prêt sur :5432
+deactivate docker
+
+ws -> jhp : ./gradlew bootRun
+activate jhp
+jhp --> dev : Application disponible\nsur http://localhost:8080
+deactivate jhp
+deactivate ws
+
+...temps de développement...
+
+dev -> dev : Modifie edster.jdl\n(nouvelle entité)
+dev -> ws : ./gradlew regenerate
+activate ws
+
+ws -> jhp : cleanCodebase\n(supprime src/, build/, gradle/…)
+activate jhp
+jhp --> ws : ✓ nettoyé
+deactivate jhp
+
+ws -> jhp : generateJdl\n(jhipster jdl --force)
+activate jhp
+jhp --> ws : ✓ projet régénéré
+deactivate jhp
+
+ws -> cb : syncCodebase\n(rsync __codebase__/ → edster/)
+activate cb
+cb --> ws : ✓ code métier restauré
+deactivate cb
+
+ws --> dev : ✓ Prêt à reprendre\nle développement
+deactivate ws
+
+@enduml
+....
+
+== Manifest de synchronisation (`SyncCodebaseTask`)
+
+Les artefacts synchronisés depuis `__codebase__/` vers le projet JHipster :
+
+[cols="2,2,1", options="header"]
+|===
+| Source dans `__codebase__/` | Destination dans le projet | Type
+
+| `build.gradle`
+| `./build.gradle`
+| Fichier
+
+| `gradle/`
+| `./gradle/`
+| Répertoire
+
+| `src/`
+| `./src/`
+| Répertoire
+
+| `.github/`
+| `./.github/`
+| Répertoire
+
+| `buildSrc/`
+| `./buildSrc/`
+| Répertoire
+|===
+
+TIP: `build/` et `.gradle/` sont nettoyés avant la synchronisation
+pour éviter les conflits de cache Gradle.
+
+== Patches post-génération (`GenerateJdlTask`)
+
+Après chaque régénération JHipster, ces patches sont appliqués automatiquement :
+
+[cols="2,3", options="header"]
+|===
+| Fichier patché | Modification
+
+| `.gitignore`
+| Ajoute `.goose`, `README.pdf`, `README.html`, `README.docx`, `README.epub` (fr et en)
+
+| `gradle/libs.versions.toml`
+| Remplace `kotlin = "x.y.z"` par `kotlin = "2.3.20"`
+
+| `build.gradle`
+| Injecte `kotlin.jvmToolchain(17)` (idempotent via marqueur de commentaire)
+
+| `buildSrc/build.gradle`
+| Met à jour `kotlin-gradle-plugin:x.y.z` vers `2.3.20`
+|===
+
+== Détection Docker Compose
+
+[plantuml, docker-detection, svg]
+....
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 11
+
+skinparam activity {
+  BackgroundColor      #FDFEFE
+  BorderColor          #2E86C1
+  FontSize             11
+  DiamondBackgroundColor #FEF9E7
+  DiamondBorderColor     #F39C12
+}
+
+start
+:DockerTask.execute();
+
+if (docker compose version\nexécuté avec succès ?) then (✅ oui)
+  :"docker compose"\n(Compose V2 — intégré à Docker Engine);
+else (❌ non)
+  if (docker-compose --version\nexécuté avec succès ?) then (✅ oui)
+    :"docker-compose"\n(Compose V1 — binaire standalone);
+  else (❌ non)
+    #FADBD8 :Erreur — Docker Compose\nnon disponible;
+    stop
+  endif
+endif
+
+:Exécute la commande compose\navec les arguments du mode;
+stop
+@enduml
+....
+
+== Publication
+
+[source,bash]
+----
+# Prérequis : credentials dans ~/.gradle/gradle.properties
+# gradle.publish.key=<votre-clé>
+# gradle.publish.secret=<votre-secret>
+
+# Publication sur le Gradle Plugin Portal
+./gradlew :persistence:publishPlugins
+
+# Vérification avant publication
+./gradlew :persistence:publishPlugins --validate-only
+----
+
+Le plugin sera disponible à l'adresse :
+`https://plugins.gradle.org/plugin/dev.jhipster.persistence`
+
+== Référence des erreurs courantes
+
+[cols="2,3", options="header"]
+|===
+| Erreur | Solution
+
+| `Aucun projet JHipster trouvé`
+| Vérifier que le projet frère contient `.yo-rc.json`
+
+| `Fichier JDL introuvable`
+| Le fichier JDL doit s'appeler `<nom-du-projet>.jdl`
+
+| `nvm requis`
+| Installer nvm et créer l'alias `nvm alias lts/jod lts/jod`
+
+| `jhipster: command not found`
+| `npm install -g generator-jhipster` avec nvm `lts/jod` actif
+
+| `__codebase__ introuvable`
+| Créer le répertoire manuellement ou lancer `syncCodebase` après `generateJdl`
+|===

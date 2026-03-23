@@ -1,0 +1,24 @@
+recent_conversations.json
+doc.adoc
+# Gradle
+.gradle/
+build/
+**/build/
+!src/**/build/
+
+# Plugin Portal credentials — ne jamais committer
+gradle.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.class
+
+# MCP
+.mcp-server.pid
+mcp-sse-config.json
+claude-desktop-snippet.json
+
+# Conversations persistées (données locales, pas du code)
+**/conversations/

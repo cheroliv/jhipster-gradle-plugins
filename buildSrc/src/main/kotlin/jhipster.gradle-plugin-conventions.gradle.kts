@@ -17,7 +17,7 @@ plugins {
     kotlin("jvm")
 }
 
-group = "dev.jhipster"
+group = "com.cheroliv"
 
 kotlin {
     compilerOptions {

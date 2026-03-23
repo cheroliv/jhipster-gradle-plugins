@@ -13,6 +13,14 @@
 :persistence-plugin-id: com.cheroliv.jhipster.persistence
 :assistant-plugin-id: com.cheroliv.jhipster.assistant
 
+++++
+<p align="right">
+  <a href="README_plantuml_fr.adoc">
+    <img src=".github/workflows/readmes/images/lang-fr-red.svg" alt="Français" width="64"/>
+  </a>
+</p>
+++++
+
 Mono-repository containing two Gradle plugins for JHipster Kotlin projects.
 Each plugin is an independent artifact published separately on the Gradle Plugin Portal.
 

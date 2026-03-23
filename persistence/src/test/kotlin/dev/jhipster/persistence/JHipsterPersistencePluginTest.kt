@@ -24,6 +24,7 @@ import java.io.File
  * GradleTestKit reçoit `pluginDir` comme `projectDir`.
  * `edster/` est créé comme frère de `pluginDir` dans `parentDir`.
  */
+@Suppress("NonAsciiCharacters")
 class JHipsterPersistencePluginTest {
 
     @TempDir

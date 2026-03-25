@@ -32,7 +32,7 @@ hand-written business code.
 This repository solves that problem with two complementary plugins covering
 the entire lifecycle of a JHipster Kotlin project.
 
-image::/.github/workflows/readmes/images/en/vision-overview.png[vision-overview]
+image::{docdir}//home/cheroliv/workspace/__repositories__/jhipster-gradle-plugins/.github/workflows/readmes/images/en/vision-overview.png[vision-overview]
 
 == Plugins
 
@@ -58,7 +58,7 @@ Not published — development will start after `persistence` is stable.
 
 == Repository Structure
 
-image::/.github/workflows/readmes/images/en/repo-structure.png[repo-structure]
+image::{docdir}//home/cheroliv/workspace/__repositories__/jhipster-gradle-plugins/.github/workflows/readmes/images/en/repo-structure.png[repo-structure]
 
 [source]
 ----
@@ -79,7 +79,7 @@ jhipster-gradle-plugins/
 The Gradle module boundary physically guarantees that `persistence`
 cannot accidentally pull in a LangChain4j or Docker dependency.
 
-image::/.github/workflows/readmes/images/en/dependency-boundary.png[dependency-boundary]
+image::{docdir}//home/cheroliv/workspace/__repositories__/jhipster-gradle-plugins/.github/workflows/readmes/images/en/dependency-boundary.png[dependency-boundary]
 
 == Root Commands
 

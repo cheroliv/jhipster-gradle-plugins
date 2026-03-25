@@ -1,4 +1,4 @@
-name: Generate README from PlantUML sources
+name: Generate README from truth sources
 
 on:
   push:
@@ -6,12 +6,12 @@ on:
       - main
       - master
     paths:
-      - "README_plantuml*.adoc"
+      - "README_truth*.adoc"
   workflow_dispatch:
 
 jobs:
   generate-readme:
-    name: Process PlantUML → README
+    name: Process README_truth → README
     runs-on: ubuntu-latest
 
     permissions:
@@ -23,10 +23,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 25
+      - name: Set up JDK 24
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
+          java-version: '24'
           distribution: 'temurin'
           cache: gradle
 
@@ -34,7 +34,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Inject plugin config
-        run: echo "${{ secrets.README_GRADLE_PLUGIN }}" > readme-plantuml.yml
+        run: echo "${{ secrets.README_GRADLE_PLUGIN }}" > readme-truth.yml
 
       - name: Generate README and commit via JGit
         run: ./gradlew -q -s commitGeneratedReadme --no-daemon
@@ -42,7 +42,7 @@ jobs:
       - name: Summary
         if: always()
         run: |
-          echo "### README PlantUML — Result" >> $GITHUB_STEP_SUMMARY
+          echo "### README — Result" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           git diff HEAD~1 --name-only 2>/dev/null | while read f; do
             echo "- \`$f\`" >> $GITHUB_STEP_SUMMARY

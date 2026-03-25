@@ -33,7 +33,7 @@ le code métier écrit à la main.
 Ce dépôt résout ce problème avec deux plugins complémentaires qui couvrent
 l'ensemble du cycle de vie d'un projet JHipster Kotlin.
 
-image::/.github/workflows/readmes/images/fr/vision-overview.png[vision-overview]
+image::{docdir}//home/cheroliv/workspace/__repositories__/jhipster-gradle-plugins/.github/workflows/readmes/images/fr/vision-overview.png[vision-overview]
 
 == Plugins
 
@@ -59,7 +59,7 @@ Non publié — développement démarrera après stabilisation de `persistence`.
 
 == Structure du dépôt
 
-image::/.github/workflows/readmes/images/fr/repo-structure.png[repo-structure]
+image::{docdir}//home/cheroliv/workspace/__repositories__/jhipster-gradle-plugins/.github/workflows/readmes/images/fr/repo-structure.png[repo-structure]
 
 [source]
 ----
@@ -81,7 +81,7 @@ jhipster-gradle-plugins/
 La frontière de module Gradle garantit physiquement que `persistence`
 ne peut pas tirer une dépendance LangChain4j ou Docker accidentellement.
 
-image::/.github/workflows/readmes/images/fr/dependency-boundary.png[dependency-boundary]
+image::{docdir}//home/cheroliv/workspace/__repositories__/jhipster-gradle-plugins/.github/workflows/readmes/images/fr/dependency-boundary.png[dependency-boundary]
 
 == Commandes racine
 

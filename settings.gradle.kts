@@ -8,4 +8,5 @@ pluginManagement {
 
 rootProject.name = "jhipster-gradle-plugins"
 
-include("persistence", "assistant")
+include("persistence")
+include("assistant")

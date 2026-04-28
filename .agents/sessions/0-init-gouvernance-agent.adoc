@@ -1,0 +1,80 @@
+= Session 0 — Initialisation Gouvernance Agent
+
+**Date** : 2026-04-28
+**Statut** : ✅ TERMINEE
+**Module** : racine
+
+---
+
+== Contexte
+
+Premiere session sur le projet jhipster-gradle-plugins avec Opencode.
+Le projet existe deja (code source, build Gradle, plugins persistence et assistant)
+mais aucune gouvernance agent n'est en place.
+
+Objectif : implementer la methodologie Eager/Lazy de gouvernance agent
+basee sur AsciiDoc, identique a celle des 4 autres projets du portefeuille
+(magic_stick, bakery-gradle, cheroliv.com, plantuml-gradle).
+
+---
+
+== Actions Entreprises
+
+=== 1. Creation de la structure de gouvernance
+
+**Fichiers crees** :
+| Fichier | Modification |
+| `opencode.json` | Creation — 6 lignes, instructions: AGENT.adoc |
+| `AGENT.adoc` | Creation — 228 lignes, directives completes adaptees au mono-repo |
+| `PROMPT_REPRISE.adoc` | Creation — 70 lignes, mission session 1 a definir |
+| `.agents/INDEX.adoc` | Creation — regles absolues executives, roadmap, portefeuille |
+| `.agents/SESSIONS_HISTORY.adoc` | Creation — tableau historique avec session 0 |
+| `.agents/SESSION_CHECKLIST.adoc` | Creation — metriques et signaux de transition |
+| `.agents/PROCEDURES.adoc` | Creation — procedure 6 etapes + LAZY/EAGER |
+| `.agents/AGENT_SESSION_MANAGER.adoc` | Creation — templates d'archivage, seuils d'alerte |
+| `.agents/TEST_COVERAGE_ANALYSIS.adoc` | Creation — suivi couverture tests (vide, a remplir) |
+| `.agents/PLUGIN_DEVELOPER.adoc` | Creation — agent specialise dev plugins Gradle Kotlin DSL |
+| `.agents/BACKLOG_MANAGER.adoc` | Creation — agent planification priorisation EPICs mono-repo |
+| `.agents/sessions/` | Creation — dossier archives par session |
+| `.agents/archives/` | Creation — dossier archives mensuelles |
+
+=== 2. Adaptations specifiques au mono-repo
+
+* Champ `Module` ajoute dans les templates de session (persistence / assistant / buildSrc / racine)
+* Boundary de dependances grave comme regle absolue 4 (persistence lightweight, pas de LangChain4j/Docker/pgvector/MCP)
+* Agents specialises adaptes : PLUGIN_DEVELOPER (conventions Kotlin/Gradle) et BACKLOG_MANAGER (dependance persistence → assistant)
+* Roadmap avec EPICs separees par module
+
+**Commandes executees** :
+----
+mkdir -p .agents/sessions .agents/archives
+----
+
+**Resultats** :
+- ✅ Succes : 13 fichiers crees, structure de gouvernance operationnelle
+- ✅ Coherence : format identique aux 4 autres projets du portefeuille
+
+---
+
+== Resultats
+
+| Critere | Statut | Details |
+| opencode.json | ✅ | instructions: AGENT.adoc, charge automatiquement |
+| AGENT.adoc | ✅ | 228 lignes, directives completes adaptees |
+| INDEX.adoc | ✅ | Regles executives + roadmap + portefeuille 5 projets |
+| Fichiers LAZY | ✅ | 7 fichiers structurants crees |
+| Agents specialises | ✅ | PLUGIN_DEVELOPER + BACKLOG_MANAGER |
+| Dossiers | ✅ | sessions/ et archives/ crees |
+
+---
+
+== Prochaines Etapes (Session 1)
+
+. **Definir la mission session 1** avec l'utilisateur (propositions : tests persistence, publication Plugin Portal, debut RAG assistant)
+. **Premier commit gouvernance** (git add + commit + push)
+. **Mettre a jour le portefeuille** des 4 autres projets (ajout jhipster-gradle-plugins 🆕)
+
+---
+
+**Session 0** — ✅ TERMINEE
+**Session 1** — Prête (mission a definir par l'utilisateur)

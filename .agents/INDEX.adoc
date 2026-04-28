@@ -1,0 +1,197 @@
+= Index des Sessions — JHipster Gradle Plugins
+
+_Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
+
+_Derniere mise a jour_ : 2026-04-28
+_Session en cours_ : 1 — A definir par l'utilisateur
+_Session terminee_ : 0 (Initialisation gouvernance agent — bootstrap complet, 13 fichiers crees)
+
+'''
+
+== ⚠️ REGLES ABSOLUES
+
+=== 0. ENVIRONNEMENT DE DEV
+
+_Commandes depuis la racine du mono-repo_ :
+
+* ✅ `./gradlew check` — build + tests des deux modules
+* ✅ `./gradlew :persistence:check` — persistence uniquement
+* ✅ `./gradlew :persistence:publishToMavenLocal` — publication locale
+* ✅ `./gradlew :assistant:check` — assistant uniquement
+
+⚠️ **Boundary critique** : `persistence/` est lightweight (pas de LangChain4j, Docker, pgvector, MCP).
+Ne JAMAIS ajouter de dependance lourde dans `persistence/build.gradle.kts`. Le boundary Gradle est une garantie physique.
+
+=== 1. COMMITS/GIT
+
+_L'agent NE DOIT JAMAIS_ executer de commit, push, merge, ou toute commande git modifiant l'historique _SANS permission explicite de l'utilisateur_.
+
+* ✅ _Autorise_ : `git status`, `git diff`, `git log`, `git show` (lecture seule)
+* ❌ _Interdit_ : `git add`, `git commit`, `git push`, `git merge`, `git rebase` (sauf ordre explicite)
+
+_Procedure obligatoire avant tout commit_ :
+. Montrer les modifications (`git diff --stat`)
+. Demander : "Veux-tu que je commit ces changements ?"
+. _Attendre confirmation explicite_ ("oui", "commit", "vas-y")
+. _Seulement apres_ : executer le commit
+
+=== 1b. FICHIERS DE CONFIGURATION — REGLE ABSOLUE DE SURETE
+
+**PRINCIPE** : Tout fichier de configuration peut contenir des donnees sensibles non versionnees.
+
+**INTERDICTIONS** :
+
+* ❌ **NE JAMAIS ecraser** un fichier config avec un `Write` complet quand un `Edit` partiel suffit
+* ❌ **NE JAMAIS remplacer** des valeurs sensibles par des valeurs factices
+* ❌ **NE JAMAIS modifier** sans verifier `git check-ignore` et `git ls-files`
+
+**Procedure OBLIGATOIRE** :
+
+. `git check-ignore <fichier>` + `git ls-files -- <fichier>`
+. Si non tracke : **CREER UNE SAUVEGARDE** (`cp <fichier> <fichier>.bak`)
+. **PRESERVER** les valeurs sensibles intactes
+. Privilegier l'**edit partiel** sur l'ecriture complete
+. **Verifier** apres modification que les valeurs sensibles sont toujours la
+
+=== 1c. FICHIERS PERSONNELS — INTERDICTION DE MODIFIER
+
+_L'agent NE DOIT JAMAIS_ modifier, ecraser ou supprimer un fichier personnel de l'utilisateur (`~/.gitconfig`, `~/.bashrc`, `~/.ssh/config`, `~/.zshrc`, etc.) _SANS permission explicite_.
+
+=== 2. TESTS EN FIN DE SESSION — INTERDICTION FORMELLE
+
+_L'agent NE DOIT JAMAIS_ lancer de tests (`./gradlew check`, `./gradlew test`) lors de la procedure de fin de session _SANS permission explicite_.
+
+=== 3. PROCEDURE DE FIN DE SESSION — EXECUTION COMPLETE OBLIGATOIRE
+
+_REGLE ABSOLUE_ : Quand l'utilisateur declenche la fin de session, l'agent DOIT executer _TOUTES les etapes_ _SANS EXCEPTION_.
+
+_Les 6 etapes OBLIGATOIRES_ (dans l'ordre) :
+
+. ✅ _Creer l'archive_ `.agents/sessions/{N}-{titre}.adoc`
+. ✅ _Mettre a jour PROMPT_REPRISE.adoc_ pour la session N+1
+. ✅ _Mettre a jour SESSIONS_HISTORY.adoc_ avec la session N
+. ✅ _Mettre a jour INDEX.adoc_ (session en cours, roadmap, fichiers)
+. ✅ _Mettre a jour TEST_COVERAGE_ANALYSIS.adoc_ si des tests ont ete ajoutes/modifies
+. ✅ _Mettre a jour COMPLETED_TASKS_ARCHIVE.adoc_ `.agents/archives/COMPLETED_TASKS_ARCHIVE_{mois}.adoc`
+
+_Confirmation finale OBLIGATOIRE_ :
+
+[source]
+----
+✅ Procedure de fin de session executee
+📋 Checklist :
+[✅] 1. Archive session N creee
+[✅] 2. PROMPT_REPRISE.adoc mis a jour pour session N+1
+[✅] 3. SESSIONS_HISTORY.adoc mis a jour
+[✅] 4. INDEX.adoc mis a jour
+[✅] 5. TEST_COVERAGE_ANALYSIS.adoc mis a jour (si applicable)
+[✅] 6. COMPLETED_TASKS_ARCHIVE.adoc mis a jour
+----
+
+_Aucune etape ne peut etre marquee [✅] si le fichier n'a pas ete effectivement modifie et verifie._
+
+=== 4. BOUNDARY DE DEPENDANCES — REGLE ABSOLUE
+
+**persistence/ est lightweight** — pas de LangChain4j, Docker, pgvector, MCP, Ktor.
+
+* ❌ _Interdit_ : Ajouter une dependance LangChain4j, Docker, pgvector, MCP dans `persistence/build.gradle.kts`
+* ❌ _Interdit_ : Ajouter une dependance Ktor, KotlinX Serialization dans `persistence/build.gradle.kts`
+* ✅ _Si une dependance lourde est necessaire_ : Elle va DANS `assistant/build.gradle.kts`
+
+_Le but du boundary Gradle_ : `persistence` est utilisable sans Docker, sans LLM, sans infrastructure.
+Si on casse ca, tout le design du mono-repo s'effondre.
+
+'''
+
+== 🎯 Sessions Recentes (15 dernieres)
+
+|===
+| # | Date | Type | Sujet | Score
+| 0 | 2026-04-28 | chore | Initialisation gouvernance agent (bootstrap 13 fichiers, mono-repo adapte) | 8/10
+|===
+
+'''
+
+== 🎯 Roadmap — Etat Actuel
+
+|===
+| Module | Statut | Version | Tests | Publication
+| **persistence** | ✅ Stable | 0.0.1 | JUnit 5 + TestKit (tests a renforcer) | Plugin Portal (a publier)
+| **assistant** | 🚧 SNAPSHOT | 0.1.0-SNAPSHOT | Stub, tests planifies | Non publie
+| **buildSrc** | ✅ Convention plugin operationnel | - | - | -
+|===
+
+'''
+
+== 📈 EPICs — Persistence Plugin
+
+|===
+| EPIC | Progression | Score | Priorite
+| EPIC 1 : Initialisation projet + structure mono-repo | ✅ 100% | 9/10 | ✅ TERMINE
+| EPIC 2 : Plugin convention partage buildSrc | ✅ 100% | 9/10 | ✅ TERMINE
+| EPIC 3 : Tasks CleanCodebase + GenerateJdl + SyncCodebase | ✅ 100% | 9/10 | ✅ TERMINE
+| EPIC 4 : Task Docker (dockerDb, dockerUp, dockerDown) | ✅ 100% | 9/10 | ✅ TERMINE
+| EPIC 5 : Tests unitaires + TestKit | 🟡 50% | - | 🟡 P1 — Tests a renforcer
+| EPIC 6 : Tests fonctionnels projet JHipster cible | 🟡 0% | - | 🟡 P2 — A FAIRE
+| EPIC 7 : Publication v0.0.1 sur Gradle Plugin Portal | 🟡 0% | - | 🟡 P0 — A FAIRE (credentials necessaires)
+| EPIC 8 : Documentation (README FR/EN, doc.adoc) | 🟡 60% | - | 🟡 P2 — READMEs existent, retouche
+|===
+
+== 📈 EPICs — Assistant Plugin
+
+|===
+| EPIC | Progression | Score | Priorite
+| EPIC 1 : Structure stub SNAPSHOT | ✅ 100% | 9/10 | ✅ TERMINE
+| EPIC 2 : RAG pgvector (indexation doc JHipster/Kotlin/Gradle/Arrow) | 🟡 0% | - | 🟡 P1 — A FAIRE
+| EPIC 3 : Multi-provider LLM (Ollama/Gemini/Mistral) | 🟡 0% | - | 🟡 P1 — A FAIRE
+| EPIC 4 : Serveur MCP (HTTP SSE) | 🟡 0% | - | 🟡 P2 — A FAIRE
+| EPIC 5 : Tests integres + TestContainers | 🟡 0% | - | 🟡 P1 — A FAIRE
+|===
+
+'''
+
+== 📁 Fichiers Associes
+
+|===
+| Fichier | Role | Type
+| `AGENT.adoc` | Directives completes projet | EAGER
+| `PROMPT_REPRISE.adoc` | Mission session en cours | EAGER
+| `.agents/INDEX.adoc` | Ce fichier — Regles absolues + roadmap | EAGER
+| `.agents/AGENT_SESSION_MANAGER.adoc` | Procedure d'archivage + templates | LAZY
+| `.agents/PROCEDURES.adoc` | Procedure fin session + LAZY/EAGER | LAZY
+| `.agents/SESSION_CHECKLIST.adoc` | Quand changer de session + metriques | LAZY
+| `.agents/SESSIONS_HISTORY.adoc` | Historique complet des sessions | LAZY
+| `.agents/TEST_COVERAGE_ANALYSIS.adoc` | Suivi couverture de tests (etape 5) | LAZY
+| `.agents/PLUGIN_DEVELOPER.adoc` | Agent PLUGIN DEVELOPER — dev plugins Gradle | LAZY
+| `.agents/BACKLOG_MANAGER.adoc` | Agent BACKLOG MANAGER — planification | LAZY
+| `.agents/sessions/` | Archives par session | LAZY
+| `.agents/archives/` | Archives mensuelles (COMPLETED_TASKS) | LAZY
+|===
+
+'''
+
+_Note_ : Cet index est maintenu automatiquement par l'agent en fin de session.
+
+'''
+
+== 🌐 Portefeuille de Projets
+
+Projets gerant la meme methodologie opencode (EAGER/LAZY, procedure de fin de session 6 etapes, COMPLETED_TASKS_ARCHIVE) :
+
+|===
+| Projet | Repertoire | Session en cours | Etape 5 specifique | Derniere MAJ
+| magic_stick | `~/workspace/__repositories__/magic_stick` | 037 | SCRIPT_VERIFICATION.adoc | 2026-04-28
+| bakery-gradle | `~/workspace/__repositories__/bakery-gradle/bakery-plugin` | 11 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
+| cheroliv.com | `~/workspace/__repositories__/cheroliv.com` | 10 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
+| plantuml-gradle | `~/workspace/__repositories__/plantuml-gradle/plantuml-plugin` | 133 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
+| **jhipster-gradle-plugins** | `~/workspace/__repositories__/jhipster-gradle-plugins` | **1** | TEST_COVERAGE_ANALYSIS.adoc | **2026-04-28** 🆕
+|===
+
+_Procedure de fin de session commune_ :
+
+. ✅ Creer l'archive `.agents/sessions/{N}-{titre}.adoc`
+. ✅ Mettre a jour `PROMPT_REPRISE.adoc` pour la session N+1
+. ✅ Mettre a jour `SESSIONS_HISTORY.adoc` avec la session N
+. ✅ Mettre a jour `INDEX.adoc` (session en cours, roadmap, fichiers)
+. ✅ Mettre a jour `TEST_COVERAGE_ANALYSIS.adoc` (si tests ajoutes/modifies)
+. ✅ Mettre a jour `COMPLETED_TASKS_ARCHIVE_{mois}.adoc`

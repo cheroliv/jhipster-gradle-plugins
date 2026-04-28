@@ -1,0 +1,231 @@
+= JHipster Gradle Plugins — Directives Agent
+:toc: left
+:toclevels: 3
+:icons: font
+:sectnums:
+
+[CAUTION]
+====
+**ARRET OBLIGATOIRE** avant `rm`, `Write` (ecrasement), ou suppression de fichier :
+1. LIRE le fichier en entier
+2. VERIFIER `git ls-files -- <fichier>` (si pas dans git = pas de retour possible)
+3. DEMANDER confirmation fichier par fichier a l'utilisateur
+4. ATTENDRE "oui" avant d'agir
+====
+
+== Projet
+
+**Nom** : jhipster-gradle-plugins (mono-repo de deux plugins Gradle JHipster)
+**Stack** : Kotlin, Gradle (plugin development), JHipster, JUnit 5, TestContainers, LangChain4j, pgvector, MCP
+**Documentation** : AsciiDoc + README + Diagrammes
+
+=== Plugins
+
+* **`com.cheroliv.jhipster.persistence`** ✅ stable (v0.0.1) — Orchestre le cycle clean → generate → sync d'un projet JHipster
+sans perdre le code metier Kotlin persiste dans `__codebase__/`. Convention-based, pas de DSL.
+* **`com.cheroliv.jhipster.assistant`** 🚧 SNAPSHOT (v0.1.0-SNAPSHOT) — Assistance au code via RAG pgvector, LLM multi-provider et serveur MCP.
+
+=== Structure du Mono-Repo
+
+[source,bash]
+----
+jhipster-gradle-plugins/
+├── settings.gradle.kts          ← include("persistence", "assistant")
+├── build.gradle.kts             ← racine minimale (plugin readme)
+├── gradle/
+│   └── libs.versions.toml       ← catalog partage (persistence + assistant)
+├── buildSrc/                    ← convention plugin `jhipster.gradle-plugin-conventions`
+│   ├── src/main/kotlin/
+│   │   └── jhipster.gradle-plugin-conventions.gradle.kts
+│   └── gradle/libs.versions.toml
+├── persistence/                 ← com.cheroliv.jhipster.persistence (lightweight)
+│   ├── build.gradle.kts
+│   └── src/
+├── assistant/                   ← com.cheroliv.jhipster.assistant (SNAPSHOT, lourd)
+│   ├── build.gradle.kts
+│   └── src/
+├── gradle.properties.template   ← credentials Plugin Portal (ne pas committer)
+├── PROMPT_REPRISE.adoc         ← Mission session en cours (EAGER)
+└── AGENT.adoc                   ← Directives completes (ce fichier, EAGER)
+----
+
+=== Frontiere de Dependances
+
+Le boundary Gradle garantit physiquement que `persistence` ne peut pas accidentellement
+tirer LangChain4j ou Docker. `assistant` isole toutes les dependances lourdes (RAG, MCP, Docker Java client).
+
+== Regles Absolues
+
+=== 0. ENVIRONNEMENT DE DEV — COMMANDES ESSENTIELLES
+
+[source,bash]
+----
+# Build et tests des deux modules
+./gradlew check
+
+# Persistence uniquement
+./gradlew :persistence:check
+./gradlew :persistence:publishPlugins           # Plugin Portal
+./gradlew :persistence:publishToMavenLocal       # Publication locale (tests)
+
+# Assistant uniquement (SNAPSHOT, non publie)
+./gradlew :assistant:check
+----
+
+=== 1. COMMITS/GIT
+
+**INTERDICTION FORMELLE** de commit/push/merge sans permission explicite de l'utilisateur.
+
+* ✅ _Autorise_ : `git status`, `git diff`, `git log`, `git show` (lecture seule)
+* ❌ _Interdit_ : `git add`, `git commit`, `git push`, `git merge`, `git rebase` (sauf ordre explicite)
+
+_Procedure obligatoire avant tout commit_ :
+. Montrer les modifications (`git diff --stat`)
+. Demander : "Veux-tu que je commit ces changements ?"
+. _Attendre confirmation explicite_ ("oui", "commit", "vas-y")
+. _Seulement apres_ : executer le commit
+
+=== 1b. FICHIERS DE CONFIGURATION — REGLE ABSOLUE DE SURETE
+
+**PRINCIPE** : Tout fichier de configuration (YAML, properties, TOML, .env) peut contenir des donnees sensibles non versionnees.
+
+**INTERDICTIONS** :
+
+* ❌ **NE JAMAIS ecraser** un fichier config avec un `Write` complet quand un `Edit` partiel suffit
+* ❌ **NE JAMAIS remplacer** des valeurs sensibles par des valeurs factices
+* ❌ **NE JAMAIS modifier** sans verifier `git check-ignore` et `git ls-files`
+
+**Procedure OBLIGATOIRE** :
+
+. `git check-ignore <fichier>` + `git ls-files -- <fichier>`
+. Si non tracke : **CREER UNE SAUVEGARDE** (`cp <fichier> <fichier>.bak`)
+. **PRESERVER** les valeurs sensibles intactes
+. Privilegier l'**edit partiel** sur l'ecriture complete
+. **Verifier** apres modification
+
+**Attention particuliere ici** :
+* `gradle.properties` — contient `gradle.publish.key` et `gradle.publish.secret` (Plugin Portal credentials). Genere depuis `gradle.properties.template`. **Jamais committer**.
+* `gradle.properties.template` — template public, sans secrets.
+
+=== 1c. FICHIERS PERSONNELS — INTERDICTION DE MODIFIER
+
+_L'agent NE DOIT JAMAIS_ modifier, ecraser ou supprimer un fichier personnel de l'utilisateur SANS permission explicite.
+
+=== 2. TESTS EN FIN DE SESSION — INTERDICTION FORMELLE
+
+_L'agent NE DOIT JAMAIS_ lancer de tests (`./gradlew check`, `./gradlew test`, etc.) lors de la procedure de fin de session _SANS permission explicite_.
+
+=== 3. PROCEDURE DE FIN DE SESSION — EXECUTION COMPLETE OBLIGATOIRE
+
+_REGLE ABSOLUE_ : Quand l'utilisateur declenche la fin de session ("fin de session", "session terminee", "je quitte", "a plus tard", "on arrete la"), l'agent DOIT executer _TOUTES les etapes_ _SANS EXCEPTION_.
+
+_Les 6 etapes OBLIGATOIRES_ (dans l'ordre) :
+
+. ✅ _Creer l'archive_ `.agents/sessions/{N}-{titre}.adoc`
+. ✅ _Mettre a jour PROMPT_REPRISE.adoc_ pour la session N+1
+. ✅ _Mettre a jour SESSIONS_HISTORY.adoc_ avec la session N
+. ✅ _Mettre a jour INDEX.adoc_ (session en cours, roadmap, fichiers)
+. ✅ _Mettre a jour TEST_COVERAGE_ANALYSIS.adoc_ si des tests ont ete ajoutes/modifies
+. ✅ _Mettre a jour COMPLETED_TASKS_ARCHIVE.adoc_ `.agents/archives/COMPLETED_TASKS_ARCHIVE_{mois}.adoc`
+
+_Confirmation finale OBLIGATOIRE_ :
+
+[source]
+----
+✅ Procedure de fin de session executee
+📋 Checklist :
+[✅] 1. Archive session N creee
+[✅] 2. PROMPT_REPRISE.adoc mis a jour pour session N+1
+[✅] 3. SESSIONS_HISTORY.adoc mis a jour
+[✅] 4. INDEX.adoc mis a jour
+[✅] 5. TEST_COVERAGE_ANALYSIS.adoc mis a jour (si applicable)
+[✅] 6. COMPLETED_TASKS_ARCHIVE.adoc mis a jour
+----
+
+_Aucune etape ne peut etre marquee [✅] si le fichier n'a pas ete effectivement modifie et verifie._
+
+== Methodologie de Travail
+
+* **1 fichier a la fois** : Modifier un seul fichier avant de passer au suivant
+* **Validation immediate** : Compiler apres chaque modification
+* **Contexte leger** : Maximum 50k tokens EAGER (~3000 lignes)
+* **Modules isoles** : `persistence/` et `assistant/` sont des modules Gradle separes avec version catalogs dedies
+
+== Components Cles
+
+=== Persistence Plugin (`persistence/`)
+
+* **JHipsterPersistencePlugin** : Point d'entree, enregistre les taches
+* **Tasks** :
+** `CleanCodebaseTask` — `./gradlew cleanCodebase`
+** `GenerateJdlTask` — `./gradlew generateJdl`
+** `SyncCodebaseTask` — `./gradlew syncCodebase`
+** `DockerTask` — `./gradlew dockerDb`, `dockerUp`, `dockerDown`, `dockerPrune`
+* **ProjectConventions** : Resolution par convention (chemins, `__codebase__/`, nvm, JHipster CLI)
+* Tests : JUnit 5 + Gradle TestKit
+
+=== Assistant Plugin (`assistant/`)
+
+* **JHipsterAssistantPlugin** : Point d'entree stub (SNAPSHOT)
+* Dependances planifiees : RAG pgvector, LLM multi-provider (Ollama/Gemini/Mistral), serveur MCP
+* Tests planifies : JUnit 5 + Gradle TestKit + TestContainers PostgreSQL
+
+=== Convention Plugin (`buildSrc/`)
+
+* `jhipster.gradle-plugin-conventions` : Configure Kotlin, Java, testing, publishing pour les deux sous-projets
+
+== Conventions de Code
+
+* Kotlin idiomatic, pas de commentaires sauf demande
+* Tests : JUnit 5 + Gradle TestKit + TestContainers
+* Documentation : AsciiDoc (.adoc) + README
+* Version catalog : `gradle/libs.versions.toml` (partage), `buildSrc/gradle/libs.versions.toml` (buildSrc)
+* Plugin IDs : `com.cheroliv.jhipster.persistence` (stable), `com.cheroliv.jhipster.assistant` (SNAPSHOT)
+* Publication : Gradle Plugin Portal (`com.gradle.plugin-publish`)
+
+== Gestion du Contexte — LAZY/EAGER
+
+=== Philosophie
+
+* **EAGER** = Tableau de bord (critique, < 100 lignes, charge automatiquement)
+* **LAZY** = Manuel du proprietaire (details complets, charge sur demande)
+
+=== Fichiers EAGER
+
+|===
+| Fichier | Role | Taille max
+| `AGENT.adoc` | Directives completes (ce fichier) | 200 lignes
+| `PROMPT_REPRISE.adoc` | Mission session en cours | 70 lignes
+| `.agents/INDEX.adoc` | Regles absolues + sessions recentes + roadmap | 200 lignes
+|===
+
+=== Fichiers LAZY
+
+|===
+| Fichier | Role
+| `.agents/sessions/{N}*.adoc` | Archives detaillees par session
+| `.agents/SESSIONS_HISTORY.adoc` | Historique complet des sessions
+| `.agents/archives/COMPLETED_TASKS_ARCHIVE_*.adoc` | Archive des taches terminees
+| `.agents/AGENT_SESSION_MANAGER.adoc` | Procedure d'archivage + templates
+| `.agents/PROCEDURES.adoc` | Procedure fin de session + LAZY/EAGER
+| `.agents/SESSION_CHECKLIST.adoc` | Quand changer de session + metriques
+| `.agents/TEST_COVERAGE_ANALYSIS.adoc` | Suivi couverture de tests (etape 5)
+| `.agents/PLUGIN_DEVELOPER.adoc` | Agent PLUGIN DEVELOPER — dev plugins Gradle
+| `.agents/BACKLOG_MANAGER.adoc` | Agent BACKLOG MANAGER — planification
+|===
+
+== Session Procedure
+
+=== Debut de Session
+
+. Lire `PROMPT_REPRISE.adoc` pour la mission en cours
+. Lire `.agents/INDEX.adoc` pour les regles absolues et etat du projet
+. Charger les fichiers LAZY si besoin
+
+=== Fin de Session
+
+**Mots-cles declencheurs** : "fin de session", "session terminee", "je quitte", "a plus tard", "on arrete la"
+
+_Regle d'or_ : Executer les 6 etapes SILENCIEUSEMENT, puis afficher la checklist de confirmation.
+
+_Voir aussi_ : `.agents/PROCEDURES.adoc` (templates detailles)

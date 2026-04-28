@@ -1,0 +1,177 @@
+= Gestionnaire de Sessions — JHipster Gradle Plugins
+
+_Version_ : 1.0
+_Derniere mise a jour_ : 2026-04-28
+
+'''
+
+== Objectif
+
+Eviter la saturation du contexte en maintenant les fichiers de session legers et archives.
+Ce projet est un mono-repo avec deux plugins Gradle (`persistence/` et `assistant/`) — la gouvernance
+distingue les deux modules dans les EPICs et le suivi.
+
+'''
+
+== Regles de Gestion
+
+=== 1. Fichiers Actifs (toujours charges)
+
+|===
+| Fichier | Role | Taille max
+| `PROMPT_REPRISE.adoc` | Contexte session actuelle | 70 lignes
+| `.agents/INDEX.adoc` | Vue d'ensemble projet | 200 lignes
+| `AGENT.adoc` | Directives completes | 200 lignes
+|===
+
+=== 2. Archivage en Fin de Session
+
+_Declencheur_ : Utilisateur dit "session terminee", "a plus tard", ou similaire
+
+_Procedure_ (6 etapes) :
+
+[source]
+----
+1. ✅ Creer l'archive `.agents/sessions/{num}-{type}-{sujet}.adoc`
+2. ✅ Mettre a jour `PROMPT_REPRISE.adoc` pour la session N+1
+3. ✅ Mettre a jour `SESSIONS_HISTORY.adoc` avec la session N
+4. ✅ Mettre a jour `INDEX.adoc` (ligne dans tableau + session en cours)
+5. ✅ Mettre a jour `TEST_COVERAGE_ANALYSIS.adoc` si des tests ont ete ajoutes/modifies
+6. ✅ Mettre a jour `COMPLETED_TASKS_ARCHIVE.adoc` `.agents/archives/COMPLETED_TASKS_ARCHIVE_{mois}.adoc`
+----
+
+=== 3. Classification par Type
+
+|===
+| Type | Mots-cles detectes | Exemple de nom
+| `debug` | "corriger", "bug", "crash", "echec", "fix" | `1-fix-task-clean.adoc`
+| `feature` | "ajouter", "nouvelle", "feature", "implementer" | `2-feature-generate-jdl.adoc`
+| `refactor` | "refactor", "nettoyer", "optimiser", "ameliorer" | `3-refactor-conventions.adoc`
+| `test` | "test", "coverage", "junit", "integration" | `4-test-tasks-unit.adoc`
+| `docs` | "documentation", "README", "guide" | `5-docs-readme.adoc`
+| `chore` | "migration", "configuration", "gouvernance" | `6-chore-gouvernance.adoc`
+|===
+
+'''
+
+== Template de Session (a generer)
+
+[source]
+----
+= Session {NUM} — {TITRE}
+
+**Date** : {date}
+**Statut** : ✅ TERMINEE / ⚠️ INCOMPLETE / ❌ ECHEC
+**Module** : {persistence | assistant | racine | buildSrc}
+
+---
+
+== Contexte
+
+{Pourquoi cette session existe ? Quel probleme resout-elle ? Quel module concerne ?}
+
+---
+
+== Actions Entreprises
+
+=== 1. {Action principale}
+
+**Fichiers modifies** :
+| Fichier | Modification |
+| `persistence/src/main/kotlin/...` | Ajout methode |
+
+**Commandes executees** :
+----
+./gradlew :persistence:check
+----
+
+**Resultats** :
+- ✅ Succes : {detail}
+- ❌ Echec : {detail}
+
+---
+
+== Resultats
+
+| Critere | Statut | Details |
+| Compilation | ✅/❌ | {detail} |
+| Tests persistence | ✅/❌ | {detail} |
+| Tests assistant | ✅/❌ | {detail} |
+
+---
+
+== Prochaines Etapes (Session {NUM+1})
+
+. **Action 1** : `{commande ou tache}`
+. **Action 2** : `{commande ou tache}`
+
+---
+
+**Session {NUM}** — {statut emoji}
+**Session {NUM+1}** — {pret/a faire}
+----
+
+'''
+
+== Tableau INDEX (a maintenir)
+
+Ajouter une ligne a chaque fin de session dans `SESSIONS_HISTORY.adoc` :
+
+[source]
+----
+| # | Date | Type | Sujet | Score
+| 1 | 2026-04-28 | feature | Initialisation gouvernance agent | 8/10
+----
+
+'''
+
+== Instructions pour l'Agent
+
+=== En debut de session
+. Lire `PROMPT_REPRISE.adoc` pour le contexte
+. Consulter `.agents/INDEX.adoc` pour historique recent et roadmap
+. Si EPIC active concerne un module (persistence/assistant), travailler DANS ce module
+. Respecter le boundary de dependances (pas de lourd dans `persistence/`)
+
+=== Pendant la session
+. Noter modifications importantes au fur et a mesure
+. Mettre a jour `PROMPT_REPRISE.adoc` en temps reel (max 70 lignes)
+. Preciser le module concernee dans les notes
+
+=== En fin de session
+. _Detecter le type_ via mots-cles de la session
+. _Generer le fichier archive_ avec le template (incluant le champ `Module`)
+. _Mettre a jour INDEX.adoc_ et SESSIONS_HISTORY.adoc
+. _Mettre a jour PROMPT_REPRISE.adoc_ (mission N+1)
+. _Mettre a jour COMPLETED_TASKS_ARCHIVE.adoc_
+
+'''
+
+== Seuils d'Alerte
+
+|===
+| Fichier | Seuil | Action
+| `PROMPT_REPRISE.adoc` | > 70 lignes | ⚠️ Proposer nettoyage
+| `INDEX.adoc` | > 50 sessions | ⚠️ Archiver anciennes sessions dans `.agents/archives/YYYY-MM.adoc`
+| `.agents/sessions/` | > 20 fichiers | ⚠️ Compresser sessions > 30 jours
+| `persistence/src/` | > 10 fichiers modifies en une session | ⚠️ Session trop grosse, splitter
+| `assistant/src/` | > 10 fichiers modifies en une session | ⚠️ Session trop grosse, splitter
+|===
+
+'''
+
+== Structure des Dossiers
+
+[source]
+----
+.agents/
+├── AGENT_SESSION_MANAGER.adoc    # Ce fichier
+├── INDEX.adoc                    # Regles absolues + roadmap
+├── SESSION_CHECKLIST.adoc        # Quand changer de session
+├── PROCEDURES.adoc               # Procedure fin session + LAZY/EAGER
+├── SESSIONS_HISTORY.adoc         # Historique toutes sessions
+├── sessions/                     # Archives par session
+│   └── {N}-{type}-{sujet}.adoc
+└── archives/                     # Archives mensuelles
+    └── COMPLETED_TASKS_ARCHIVE_{mois}.adoc
+----

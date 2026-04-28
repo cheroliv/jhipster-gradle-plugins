@@ -1,0 +1,128 @@
+= Checklist de Transition de Session — JHipster Gradle Plugins
+
+== Quand changer de session
+
+=== Situations ideales pour une nouvelle session
+
+* [ ] _1 EPIC terminee_ → Documentation → Nouvelle session
+* [ ] _1 bug fixe_ → Commit → Nouvelle session
+* [ ] _1 module (persistence/assistant) mis a jour_ → Tests valides → Nouvelle session
+* [ ] _3 echanges sans progres_ → Reset mental → Nouvelle session
+* [ ] _Contexte > 50k tokens_ → Nettoyage → Nouvelle session
+* [ ] _Plus de 2 fichiers modifies dans des modules differents_ → Split → Nouvelle session
+
+=== Ne PAS changer de session pour
+
+* Un simple fix de compilation (corriger puis continuer)
+* Une question rapide de clarification
+* Une modification mineure (< 5 lignes)
+
+'''
+
+== Procedure de fin de session
+
+=== 1. Rappel : pas de tests
+
+Ne JAMAIS lancer `./gradlew check` en fin de session sans demande explicite.
+
+=== 2. Executer la procedure de fin de session (6 etapes)
+
+. Creer l'archive `.agents/sessions/{N}-{titre}.adoc` (avec champ `Module`)
+. Mettre a jour `PROMPT_REPRISE.adoc` pour la session N+1 (max 70 lignes, avec `Module`)
+. Mettre a jour `SESSIONS_HISTORY.adoc` avec la session N
+. Mettre a jour `INDEX.adoc` (session en cours, roadmap, sessions recentes)
+. Mettre a jour `TEST_COVERAGE_ANALYSIS.adoc` (si applicable)
+. Mettre a jour `COMPLETED_TASKS_ARCHIVE.adoc` `.agents/archives/COMPLETED_TASKS_ARCHIVE_{mois}.adoc`
+
+=== 3. Commiter (optionnel mais recommande) — _Utilisateur uniquement_
+
+__
+_L'agent N'EST PAS autorise a executer des commandes Git_
+C'est l'utilisateur qui gere Git manuellement.
+__
+
+[source,bash]
+----
+git add -A
+git commit -m "feat: [description courte]"
+git push
+----
+
+=== 4. Noter le point d'arret
+
+Dans `COMPLETED_TASKS_ARCHIVE_{mois}.adoc`, ajouter :
+
+[source]
+----
+== Session {N} — {RESUME} — Module: {module}
+
+=== Fait
+* [Tache 1] ✅
+* [Tache 2] ✅
+
+=== Prochaine session
+* [Tache suivante]
+* [Fichier a lire en priorite]
+----
+
+'''
+
+== Demarrage de nouvelle session
+
+=== Prompt d'ouverture
+
+[source]
+----
+Nouvelle session. Contexte charge :
+1. AGENT.adoc (architecture, decisions, methodologie)
+2. PROMPT_REPRISE.adoc (mission en cours)
+3. .agents/INDEX.adoc (regles absolues, roadmap)
+
+Mission : [Decrire la tache unique de cette session]
+Module : [persistence | assistant | buildSrc | racine]
+
+Contrainte : 1 fichier a la fois, validation apres chaque changement.
+----
+
+=== Verification rapide
+
+[source,bash]
+----
+# 1. Build complet
+./gradlew check
+
+# 2. Fichiers modifies depuis derniere session
+git status  # A executer manuellement par l'utilisateur
+
+# 3. Derniere session
+# Consulter .agents/SESSIONS_HISTORY.adoc
+----
+
+'''
+
+== Metriques de session ideale
+
+|===
+| Metrique | Cible
+| _Duree_ | 15-30 minutes
+| _Fichiers modifies_ | 1-3 maximum (dans un seul module)
+| _Echanges LLM_ | 5-10 messages
+| _Contexte tokens_ | < 50k
+| _Modules touches_ | 1 idealement (persistence OU assistant, pas les deux)
+|===
+
+'''
+
+== Signes qu'il faut changer de session
+
+* [ ] Le LLM repete des erreurs deja corrigees
+* [ ] Plus de 3 fichiers modifies en parallele
+* [ ] L'agent tourne en boucle sur le meme probleme
+* [ ] Conversation > 50 messages
+* [ ] Tu te dis "il faudrait qu'on reparte sur de bonnes bases"
+* [ ] L'agent propose de modifier `persistence` ET `assistant` en meme temps
+
+'''
+
+_Regle d'or_ : Mieux vaut 5 sessions de 20 minutes qu'une session de 2 heures avec debugging chaos.
+Et dans ce mono-repo : **1 session = 1 module ou 1 EPIC bien definie.**

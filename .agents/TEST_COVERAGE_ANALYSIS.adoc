@@ -1,0 +1,35 @@
+= Analyse de Couverture de Tests — JHipster Gradle Plugins
+
+_Derniere mise a jour_ : 2026-04-28
+
+'''
+
+== Suivi des Tests
+
+=== Persistence Plugin (`persistence/`)
+
+|===
+| Classe de test | Type | Tests | Statut | Derniere MAJ
+| `JHipsterPersistencePluginTest` | unit | - | 🟡 A completer | 2026-04-28
+| `CleanCodebaseTaskTest` | unit | - | 🔴 A creer | -
+| `GenerateJdlTaskTest` | unit | - | 🔴 A creer | -
+| `SyncCodebaseTaskTest` | unit | - | 🔴 A creer | -
+| `DockerTaskTest` | unit | - | 🔴 A creer | -
+| `ProjectConventionsTest` | unit | - | 🔴 A creer | -
+|===
+
+=== Assistant Plugin (`assistant/`)
+
+|===
+| Classe de test | Type | Tests | Statut | Derniere MAJ
+| `JHipsterAssistantPluginTest` | unit | - | 🔴 Stub SNAPSHOT | -
+|===
+
+'''
+
+== Historique par Session
+
+|===
+| Session | Module | Tests ajoutes | Tests modifies | Couverture
+| - | - | - | - | -
+|===

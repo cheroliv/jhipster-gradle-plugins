@@ -1,0 +1,51 @@
+= Prompt de Reprise — JHipster Gradle Plugins — Session 1
+
+_Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
+
+____
+**Statut** : Initialisation de la gouvernance agent.
+**Mission** : A definir par l'utilisateur.
+____
+
+'''
+
+== Session 0 — Resume
+
+**Date** : 2026-04-28
+**Resultat** : OK — Mise en place de la gouvernance agent (AGENT.adoc + dossiers .agents/).
+
+**Archive** : aucune session precedente archivee
+
+'''
+
+== Session 1 — Priorites
+
+_Mission_ : A definir par l'utilisateur. Propositions possibles :
+
+. **persistence** : Tests unitaires CleanCodebaseTask, GenerateJdlTask, SyncCodebaseTask
+. **persistence** : Ameliorer messages d'erreur (JHipster CLI absent, nvm non installe, Docker manquant)
+. **persistence** : Tests fonctionnels avec Gradle TestKit (projet JHipster cible)
+. **persistence** : Publication v0.0.1 sur Gradle Plugin Portal (necessite `gradle.properties` avec credentials)
+. **assistant** : Demarrer l'implementation SNAPSHOT (RAG pgvector, connectivite au LLM)
+. **docs** : README bilingue FR/EN pour chaque plugin
+
+=== Criteres d'Acceptation (session a definir)
+
+* [ ] {critere 1}
+* [ ] {critere 2}
+
+'''
+
+== Rappels Techniques
+
+* Projet mono-repo : deux plugins `persistence` (stable) et `assistant` (SNAPSHOT)
+* Convention plugin dans `buildSrc/` configure Kotlin + publishing pour les deux sous-projets
+* `persistence` version `0.0.1` — `assistant` version `0.1.0-SNAPSHOT`
+* `gradle.properties.template` → `gradle.properties` pour credentials Plugin Portal
+
+== Regles
+
+* ❌ Pas de commit sans permission explicite
+* ✅ 1 fichier a la fois, validation immediate
+* ✅ `./gradlew check` pour valider les deux modules
+* ❌ Ne jamais lancer de tests en fin de session sans permission

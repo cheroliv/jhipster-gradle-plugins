@@ -1,0 +1,285 @@
+= Procedure de Fin de Session — JHipster Gradle Plugins
+
+__
+_Objectif_ : Mecanisme LAZY/EAGER pour persister l'information sans polluer le contexte
+_Principe_ : EAGER = essentiel (toujours charge), LAZY = details (charge sur demande)
+_Specifique JHipster_ : Mono-repo avec deux plugins. Chaque session precise le module concernee.
+__
+
+'''
+
+== Philosophie LAZY/EAGER
+
+=== Pourquoi ce mecanisme ?
+
+_Probleme_ : Les LLM ont un contexte limite. Charger trop d'informations dilue l'attention et coute des tokens.
+
+_Solution_ : Separer l'information en 2 categories :
+
+|===
+| Type | Caracteristiques | Exemples
+| _EAGER_ | - Critique pour demarrer - < 100 lignes - Lu automatiquement | `PROMPT_REPRISE.adoc`, `AGENT.adoc`, `.agents/INDEX.adoc`
+| _LAZY_ | - Details complets - Illimite - Lu sur demande explicite | `.agents/sessions/{N}*.adoc`, archives
+|===
+
+=== Analogie
+
+* _EAGER_ = Tableau de bord de voiture (vitesse, carburant, alertes)
+* _LAZY_ = Manuel du proprietaire (details techniques, historique entretien)
+
+'''
+
+== Procedure de Fin de Session — 6 Etapes Obligatoires
+
+=== ETAPE 0 : Rappel — ne PAS lancer de tests
+
+⚠️ _Jamais_ executer de tests (`./gradlew check`, `./gradlew test`) en procedure de fin de session sans demande explicite.
+
+'''
+
+=== ETAPE 1 : Creer l'archive LAZY de la session
+
+_Fichier_ : `.agents/sessions/{N}-{titre}.adoc`
+
+_Structure obligatoire_ (adaptee au mono-repo) :
+
+[source]
+----
+= Session {N} — {Titre}
+
+**Date** : {date}
+**Statut** : ✅ TERMINEE / ⚠️ INCOMPLETE / ❌ ECHEC
+**Module** : {persistence | assistant | racine | buildSrc | multi}
+
+---
+
+== Contexte
+
+{Pourquoi cette session existe ? Quel module ?}
+
+---
+
+== Actions Entreprises
+
+**Fichiers modifies** :
+| Fichier | Modification |
+| `persistence/src/...` | Ajout tache |
+
+**Commandes executees** :
+----
+./gradlew :persistence:check
+----
+
+**Resultats** :
+- ✅ Succes : {detail}
+- ❌ Echec : {detail}
+
+---
+
+== Resultats
+
+| Critere | Statut | Details |
+| Compilation | ✅/❌ | |
+| Tests persistence | ✅/❌ | |
+| Tests assistant | ✅/❌ | |
+
+---
+
+== Prochaines Etapes (Session {NUM+1})
+
+. **Action 1** : `{commande ou tache}`
+. **Action 2** : `{commande ou tache}`
+
+---
+
+**Session {N}** — {statut emoji}
+**Session {N+1}** — {pret/a faire}
+----
+
+'''
+
+=== ETAPE 2 : Mettre a jour le resume EAGER
+
+_Fichier_ : `PROMPT_REPRISE.adoc`
+
+_Structure obligatoire_ (max 70 lignes) :
+
+[source]
+----
+= Prompt de reprise — Session {N+1}
+
+> **Statut** : Session {N} ✅ — {resume 1 ligne}
+> **Mission** : {objectif session N+1}
+
+---
+
+== Session {N} — Resume
+
+**Date** : {date}
+**Module** : {module}
+**Resultat** : ✅ {accomplissement principal}
+
+| Fichier | Modification |
+| `persistence/...` | +15 lignes |
+
+**Archive** : `.agents/sessions/{N}-{titre}.adoc`
+
+---
+
+== Session {N+1} — Priorites
+
+. {action 1}
+. {action 2}
+
+=== Criteres d'Acceptation
+
+* [ ] {critere 1}
+* [ ] {critere 2}
+
+---
+
+== Rappels Techniques
+
+* Module {persistence/assistant} version {version}
+* Commandes cles : `./gradlew :{module}:check`
+* Boundary de dependances : persistence lightweight ✅
+
+---
+
+== Regles
+
+* ❌ Pas de commit sans permission
+* ✅ 1 fichier a la fois, validation immediate
+* ❌ Pas de tests en fin de session
+----
+
+_Contraintes_ :
+* Maximum _70 lignes_
+* _1 reference_ a l'archive LAZY
+* _Criteres d'acceptation_ clairs
+* _Module_ precise
+
+'''
+
+=== ETAPE 3 : Mettre a jour SESSIONS_HISTORY.adoc
+
+Ajouter une ligne dans le tableau :
+
+[source]
+----
+| {N} | {date} | {type} | {sujet} | {score}/10
+----
+
+'''
+
+=== ETAPE 4 : Mettre a jour INDEX.adoc
+
+* Mettre a jour "_Session en cours_"
+* Mettre a jour "_Session terminee_"
+* Ajouter session dans tableau "Sessions Recentes"
+* Mettre a jour roadmap si progression (EPIC modifiee)
+
+'''
+
+=== ETAPE 5 : Mettre a jour TEST_COVERAGE_ANALYSIS.adoc (si applicable)
+
+_Fichier_ : `TEST_COVERAGE_ANALYSIS.adoc` (si des tests ont ete ajoutes/modifies)
+
+Ajouter section :
+
+[source]
+----
+== Session {N} — {module}
+
+| Test    | Type    | Module | Statut |
+| 1       | unit    | persistence | ✅ PASS |
+----
+
+'''
+
+=== ETAPE 6 : Mettre a jour COMPLETED_TASKS_ARCHIVE.adoc
+
+_Fichier_ : `.agents/archives/COMPLETED_TASKS_ARCHIVE_{mois}.adoc`
+
+Ajouter section :
+
+[source]
+----
+== Session {N} — {RESUME} — Module: {module}
+
+=== Fait
+* [Tache 1] ✅
+* [Tache 2] ✅
+
+=== Prochaine session
+* [Tache suivante]
+----
+
+'''
+
+== Tableau des Fichiers — Politique de Chargement
+
+|===
+| Fichier | Type | Taille Max | Quand Charger
+| `PROMPT_REPRISE.adoc` | _EAGER_ | 70 lignes | _Debut session_ (auto)
+| `AGENT.adoc` | _EAGER_ | 200 lignes | _Toujours_ (auto)
+| `.agents/INDEX.adoc` | _EAGER_ | 200 lignes | _Debut session_ (auto)
+| `.agents/sessions/{N}*.adoc` | LAZY | Illimite | Sur demande (details session)
+| `.agents/SESSIONS_HISTORY.adoc` | LAZY | Illimite | Sur besoin (historique)
+| `.agents/archives/COMPLETED_TASKS_ARCHIVE_*.adoc` | LAZY | Illimite | Fin session (archive)
+| `.agents/AGENT_SESSION_MANAGER.adoc` | LAZY | Illimite | Sur besoin (procedure)
+| `.agents/PROCEDURES.adoc` | LAZY | Illimite | Sur besoin (details LAZY/EAGER)
+|===
+
+'''
+
+== Comment l'agent sait ou chercher ?
+
+=== Debut de Session
+
+_Chargement automatique (EAGER)_ :
+. `PROMPT_REPRISE.adoc` → Mission, priorites, contexte, module actif
+. `AGENT.adoc` → Architecture, regles, commandes, boundary de dependances
+. `.agents/INDEX.adoc` → Regles absolues, sessions recentes, roadmap, EPICs
+
+_Si besoin de details_ :
+* Details session N ? → `.agents/sessions/{N}-{titre}.adoc`
+* Procedure ? → `.agents/AGENT_SESSION_MANAGER.adoc`
+* Historique ? → `.agents/SESSIONS_HISTORY.adoc`
+
+=== Fin de Session
+
+_Mots-cles declencheurs_ :
+* "fin de session"
+* "je quitte"
+* "session terminee"
+* "a plus tard"
+* "on arrete la"
+
+_Action_ : Executer les 6 etapes SILENCIEUSEMENT
+
+_Confirmation finale OBLIGATOIRE_ :
+
+[source]
+----
+✅ Procedure de fin de session executee
+📋 Checklist :
+[✅] 1. Archive session N creee
+[✅] 2. PROMPT_REPRISE.adoc mis a jour pour session N+1
+[✅] 3. SESSIONS_HISTORY.adoc mis a jour
+[✅] 4. INDEX.adoc mis a jour
+[✅] 5. TEST_COVERAGE_ANALYSIS.adoc mis a jour (si applicable)
+[✅] 6. COMPLETED_TASKS_ARCHIVE.adoc mis a jour
+----
+
+_Aucune etape ne peut etre marquee [✅] si le fichier n'a pas ete effectivement modifie et verifie._
+
+'''
+
+== Regle d'Or
+
+* ❌ JAMAIS demander "Veux-tu que je...?" en fin de session
+* ❌ JAMAIS expliquer avant de faire les 6 etapes
+* ❌ JAMAIS repondre avant les 6 etapes terminees
+* ✅ FAIRE DIRECTEMENT les 6 etapes SILENCIEUSEMENT
+* ✅ Repondre UNIQUEMENT par "✅ Procedure executee" + checklist

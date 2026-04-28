@@ -1,0 +1,21 @@
+= Archive des Taches Terminees — Avril 2026
+
+== Session 0 — Initialisation Gouvernance Agent — Module: racine
+
+=== Fait
+* Creation opencode.json ✅
+* Creation AGENT.adoc (228 lignes, directives adaptees mono-repo) ✅
+* Creation PROMPT_REPRISE.adoc (mission session 1) ✅
+* Creation .agents/INDEX.adoc (regles executives + roadmap) ✅
+* Creation .agents/SESSIONS_HISTORY.adoc ✅
+* Creation .agents/SESSION_CHECKLIST.adoc ✅
+* Creation .agents/PROCEDURES.adoc (6 etapes + LAZY/EAGER) ✅
+* Creation .agents/AGENT_SESSION_MANAGER.adoc (templates) ✅
+* Creation .agents/TEST_COVERAGE_ANALYSIS.adoc ✅
+* Creation .agents/PLUGIN_DEVELOPER.adoc (agent codeur) ✅
+* Creation .agents/BACKLOG_MANAGER.adoc (agent planification) ✅
+* Creation dossiers .agents/sessions/ + .agents/archives/ ✅
+* Creation archive session 0 ✅
+
+=== Prochaine session
+* Definir la mission session 1 avec l'utilisateur

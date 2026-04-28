@@ -1,0 +1,7 @@
+= Historique des Sessions — JHipster Gradle Plugins
+
+|===
+| # | Date | Type | Sujet | Module | Score
+
+| 0 | 2026-04-28 | chore | Initialisation gouvernance agent (AGENT.adoc + .agents/) | racine | 8/10
+|===

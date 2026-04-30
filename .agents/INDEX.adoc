@@ -3,8 +3,10 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-04-30
-_Session en cours_ : 2 — A definir par l'utilisateur
+_Session en cours_ : 2 — Audit gouvernance (alignement modele magic_stick)
 _Session terminee_ : 1 — Implantation strategie backup rotation (Hot/Warm/Cold + etape 7)
+
+_Localisation active_ : `.agents/INDEX.adoc` (sessions recentes), `.agents/SESSIONS_HISTORY.adoc` (historique), `.agents/sessions/` (archives)
 
 '''
 
@@ -157,16 +159,18 @@ Si on casse ca, tout le design du mono-repo s'effondre.
 | Fichier | Role | Type
 | `AGENT.adoc` | Directives completes projet | EAGER
 | `PROMPT_REPRISE.adoc` | Mission session en cours | EAGER
+| `LAZY_EAGER_ESSENTIALS.adoc` | Principes LAZY/EAGER + politique chargement | EAGER
 | `.agents/INDEX.adoc` | Ce fichier — Regles absolues + roadmap | EAGER
-| `.agents/AGENT_SESSION_MANAGER.adoc` | Procedure d'archivage + templates | LAZY
-| `.agents/PROCEDURES.adoc` | Procedure fin session + LAZY/EAGER | LAZY
+| `.agents/SESSIONS_HISTORY.adoc` | Historique complet des sessions | EAGER
+| `.agents/PROCEDURES.adoc` | Procedure fin session + templates LAZY/EAGER | LAZY
 | `.agents/SESSION_CHECKLIST.adoc` | Quand changer de session + metriques | LAZY
-| `.agents/SESSIONS_HISTORY.adoc` | Historique complet des sessions | LAZY
 | `.agents/TEST_COVERAGE_ANALYSIS.adoc` | Suivi couverture de tests (etape 5) | LAZY
 | `.agents/PLUGIN_DEVELOPER.adoc` | Agent PLUGIN DEVELOPER — dev plugins Gradle | LAZY
 | `.agents/BACKLOG_MANAGER.adoc` | Agent BACKLOG MANAGER — planification | LAZY
 | `.agents/sessions/` | Archives par session | LAZY
 | `.agents/archives/` | Archives mensuelles (COMPLETED_TASKS) | LAZY
+| `.agents/encyclopedies/` | Connaissance thematique froide (COLD) | COLD
+| `.agents/backup/` | Vagues froides (snapshots horodates) | COLD
 |===
 
 '''
@@ -185,7 +189,8 @@ Projets gerant la meme methodologie opencode (EAGER/LAZY, procedure de fin de se
 | bakery-gradle | `~/workspace/__repositories__/bakery-gradle/bakery-plugin` | 11 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
 | cheroliv.com | `~/workspace/__repositories__/cheroliv.com` | 10 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
 | plantuml-gradle | `~/workspace/__repositories__/plantuml-gradle/plantuml-plugin` | 133 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
-| **jhipster-gradle-plugins** | `~/workspace/__repositories__/jhipster-gradle-plugins` | **2** | TEST_COVERAGE_ANALYSIS.adoc | **2026-04-30** 🆕
+| openclaw-codingame | `~/workspace/__repositories__/openclaw-codingame` | - | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
+| **jhipster-gradle-plugins** | `~/workspace/__repositories__/jhipster-gradle-plugins` | **2** | TEST_COVERAGE_ANALYSIS.adoc | **2026-04-30**
 |===
 
 _Procedure de fin de session commune_ :

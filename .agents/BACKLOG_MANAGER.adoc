@@ -95,12 +95,20 @@ Two complementary plugins cover the entire lifecycle:
 | Ollama/Gemini API keys absentes | Bloquant | assistant (LLM tests) | Mocker les appels LLM, tests d'integration avec .env
 |===
 
+== References
+
+* `AGENT.adoc` — Directives completes, regles absolues
+* `LAZY_EAGER_ESSENTIALS.adoc` — Politique de chargement EAGER/LAZY
+* `.agents/INDEX.adoc` — Roadmap, EPICs, roadmap executive
+* `.agents/SESSIONS_HISTORY.adoc` — Historique complet des sessions
+* `.agents/TEST_COVERAGE_ANALYSIS.adoc` — Suivi couverture de tests
+
 == Commandes
 
 [source,bash]
 ----
 # Verifier l'etat des EPICs
-cat .agents/INDEX.adoc | grep "EPIC"
+grep "EPIC" .agents/INDEX.adoc
 
 # Verifier la couverture de tests
 cat .agents/TEST_COVERAGE_ANALYSIS.adoc

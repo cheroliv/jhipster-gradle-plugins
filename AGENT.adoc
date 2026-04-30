@@ -184,6 +184,21 @@ _Aucune etape ne peut etre marquee [✅] si le fichier n'a pas ete effectivement
 * Plugin IDs : `com.cheroliv.jhipster.persistence` (stable), `com.cheroliv.jhipster.assistant` (SNAPSHOT)
 * Publication : Gradle Plugin Portal (`com.gradle.plugin-publish`)
 
+=== References de Style — Codebases LAZY
+
+_Regle_ : Quand l'agent a besoin de reflechir au style de code, conventions Kotlin/Gradle, ou patterns de plugin,
+il DOIT consulter ces codebases comme reference. Ces chemins sont LAZY — ne jamais charger leur contenu en EAGER.
+
+|===
+| Projet | Chemin | Role
+| bakery-gradle | `/home/cheroliv/workspace/__repositories__/bakery-gradle` | Plugin Gradle convention-based
+| plantuml-gradle | `/home/cheroliv/workspace/__repositories__/plantuml-gradle` | Plugin Gradle mature, reference principale
+| newpipe-gradle | `/home/cheroliv/workspace/__repositories__/newpipe-gradle` | Plugin Gradle
+| slider-gradle | `/home/cheroliv/workspace/__repositories__/slider-gradle` | Plugin Gradle
+| codebase-gradle | `/home/cheroliv/workspace/__repositories__/codebase-gradle` | Plugin Gradle
+| readme-gradle | `/home/cheroliv/workspace/__repositories__/readme-gradle` | Plugin Gradle
+|===
+
 == Gestion du Contexte — LAZY/EAGER
 
 === Philosophie
@@ -191,38 +206,103 @@ _Aucune etape ne peut etre marquee [✅] si le fichier n'a pas ete effectivement
 * **EAGER** = Tableau de bord (critique, < 100 lignes, charge automatiquement)
 * **LAZY** = Manuel du proprietaire (details complets, charge sur demande)
 
-=== Fichiers EAGER
+=== Audit du Contexte
+
+**Regle de vigilance** : Tout fichier EAGER > 100 lignes est un suspect. Il merite un audit. La question n'est pas "faut-il le supprimer ?" mais "faut-il le charger a chaque session ?"
+
+**Procedure d'audit en 5 etapes** :
+
+. **Mesurer** : `wc -l` sur tous les fichiers EAGER. Le total doit etre < 1000 lignes.
+. **Identifier le suspect** : le fichier qui pese > 20% du total.
+. **Auditer section par section** : Deja ailleurs ? → doublon. Jamais servi ? → mort. Information unique ? → critique.
+. **Classifier** : doublons a retirer de l'EAGER, jamais utilise → cold storage, connaissance unique → a garder.
+. **Splitter ou relocaliser** : unique et critique → ESSENTIALS compacte. Tout le reste → `encyclopedies/`.
+
+**Suivi des metriques** : Tracer le total de lignes EAGER avant/apres chaque optimisation dans COMPLETED_TASKS_ARCHIVE.
+
+=== Fichiers EAGER (charges automatiquement)
 
 |===
-| Fichier | Role | Taille max
-| `AGENT.adoc` | Directives completes (ce fichier) | 200 lignes
-| `PROMPT_REPRISE.adoc` | Mission session en cours | 70 lignes
-| `.agents/INDEX.adoc` | Regles absolues + sessions recentes + roadmap | 200 lignes
+| Fichier | Role
+
+| `PROMPT_REPRISE.adoc` | Mission session en cours (max 70 lignes)
+| `.agents/INDEX.adoc` | Regles absolues + sessions recentes
+| `LAZY_EAGER_ESSENTIALS.adoc` | Principes LAZY/EAGER + politique de chargement
+| `AGENT.adoc` | Ce fichier — Directives completes
 |===
 
 === Mécanisme de Backup — Hot/Warm/Cold Storage
 
-* **Hot (EAGER)** : 10 dernières sessions dans INDEX, PROMPT_REPRISE N+1, sessions N-1 et N
-* **Warm (LAZY)** : SESSIONS_HISTORY récent, références techniques, procédures, agents spécialisés
-* **Cold (`backup/`)** : Sessions N-10 et antérieures — copie intégrale, sans transformation ni réindexation
-* **Règle de rotation** : Tous les ~10 sessions, déplacer le paquet de fichiers agents (INDEX, SESSIONS_HISTORY, COMPLETED_TASKS_ARCHIVE, sessions/) tel quel dans `backup/`
-* **Stockage** : `.agents/backup/Y{année}-sessions-{plage}/` — structure identique à `.agents/` actif
-* **Principe** : Aucune donnée supprimée, tout relocalisé. L'agent ne charge jamais `backup/`. L'humain seul décide de la distillation.
+* **Hot (EAGER)** : 10 dernieres sessions dans INDEX, PROMPT_REPRISE N+1, sessions N-1 et N, SESSIONS_HISTORY recent
+* **Warm (LAZY)** : references techniques, procedures, agents specialises
+* **Cold (`backup/`)** : Sessions N-10 et anterieures — copie integrale, sans transformation ni reindexation
+* **Cold (`encyclopedies/`)** : Connaissance thematique exhaustive — jamais charge automatiquement, humain seulement
+* **Regle de rotation** : Tous les ~10 sessions, deplacer le paquet de fichiers agents (INDEX, SESSIONS_HISTORY, COMPLETED_TASKS_ARCHIVE, sessions/) tel quel dans `backup/`
+* **Stockage** : `.agents/backup/Y{annee}-sessions-{plage}/` — structure identique a `.agents/` actif
+* **Principe** : Aucune donnee supprimee, tout relocalise. L'agent ne charge jamais `backup/` ni `encyclopedies/`. L'humain seul decide de la distillation.
 
-=== Fichiers LAZY
+=== Defense en Profondeur — Les 3 Couches
+
+La gouvernance forme 3 couches de defense contre la saturation du contexte :
+
+. **EAGER/LAZY** — structure par *disponibilite* (tableau de bord vs manuel du proprietaire)
+. **Hot/Warm/Cold** — structure par *fraicheur* (10 sessions actives vs references vs backup)
+. **ESSENTIALS/encyclopedie** — structure par *densite* (essentiel compact vs connaissance exhaustive)
+
+=== Metaphore des 3 Etageres
+
+* **Etagere 1 (EAGER)** — le plan de travail : INDEX recent, PROMPT_REPRISE, regles absolues. Leger, immediat.
+* **Etagere 2 (LAZY)** — la bibliotheque de consultation : references techniques, procedures. Sur demande.
+* **Cave (`backup/`)** — les archives froides : tout ce qui est passe. Jamais charge auto. Humain seulement.
+
+=== Consultation du Backup (par l'humain)
+
+Deux methodes pour retrouver une information archivee :
+
+. **`grep` cible** : `grep -r "motif" backup/Y20XX-.../` — trouve tout, quel que soit l'angle (INDEX, SESSIONS_HISTORY, archive).
+. **Reintegration manuelle** : copier temporairement le dossier de backup dans le contexte actif pour analyse par l'agent.
+
+L'index du backup est **implicite** — il est dans la structure meme des fichiers archives (chaque fichier etant deja un index depuis son propre angle). Pas de `index-backup.adoc` central — ce serait une redondance de plus dans un systeme qui souffre deja de croissance lineaire.
+
+=== Fichiers LAZY (sur demande)
 
 |===
 | Fichier | Role
+
 | `.agents/sessions/{N}*.adoc` | Archives detaillees par session
 | `.agents/SESSIONS_HISTORY.adoc` | Historique complet des sessions
 | `.agents/archives/COMPLETED_TASKS_ARCHIVE_*.adoc` | Archive des taches terminees
-| `.agents/AGENT_SESSION_MANAGER.adoc` | Procedure d'archivage + templates
 | `.agents/PROCEDURES.adoc` | Procedure fin de session + LAZY/EAGER
 | `.agents/SESSION_CHECKLIST.adoc` | Quand changer de session + metriques
 | `.agents/TEST_COVERAGE_ANALYSIS.adoc` | Suivi couverture de tests (etape 5)
 | `.agents/PLUGIN_DEVELOPER.adoc` | Agent PLUGIN DEVELOPER — dev plugins Gradle
 | `.agents/BACKLOG_MANAGER.adoc` | Agent BACKLOG MANAGER — planification
+| `.agents/encyclopedies/LAZY_EAGER_ENCYCLOPEDIE.adoc` | Methodologie LAZY/EAGER complete (cold storage)
 |===
+
+== Anti-Patterns — Pieges a Eviter
+
+|===
+| # | Anti-Pattern | Symptome | Prevention
+| 1 | **Agent sans `opencode.json`** | L'agent demarre nu, pose des questions basiques deja dans AGENT.adoc | Creer `opencode.json` AVANT `AGENT.adoc`, ne jamais l'oublier
+| 2 | **Trop d'agents trop tot** | Agents stubs vides, l'agent hesite | Seuil : 100 lignes de doc metier ou 5 regles concretes avant de creer un agent specialise
+| 3 | **PROMPT_REPRISE fantome** | La mission a derive, PROMPT_REPRISE ne reflete pas la realite | Mettre a jour systematiquement en fin de session, ne pas differer
+| 4 | **Archive vide** | Template rempli de placeholders "TODO" -> "a completer plus tard" n'arrive jamais | Remplir integralement a chaque session, jamais de TODO dans les archives
+| 5 | **Portefeuille fantome** | Nouveau projet cree mais pas ajoute aux INDEX.adoc des autres projets | Ajouter le projet dans TOUS les portefeuilles, pas seulement le sien
+| 6 | **Redondance cachee** | Meme backlog copie-colle -> divergence entre AGENT.adoc et INDEX.adoc | INDEX.adoc = source de verite pour roadmap/EPICs. AGENT.adoc = storytelling uniquement
+| 7 | **Session trop longue** | 2h, 85 messages, 12 fichiers -> LLM repete des erreurs deja corrigees | Splitter des que > 50 messages ou > 3 fichiers modifies. 5x20min > 1x2h
+|===
+
+== Bootstrap d'un Nouveau Projet — 6 etapes
+
+Pour initialiser la gouvernance agent sur un projet vierge :
+
+. **opencode.json** — 6 lignes, `{ "instructions": ["AGENT.adoc"] }`. Toujours en premier.
+. **Dossiers** — `mkdir -p .agents/sessions/ .agents/archives/ .agents/encyclopedies/ .agents/backup/`
+. **AGENT.adoc** — fichier maitre (~250 lignes) : regles absolues, structure projet, conventions
+. **PROMPT_REPRISE.adoc** — mission session 1 (max 70 lignes)
+. **Fichiers LAZY structurants** : INDEX.adoc (EAGER dans .agents/), SESSIONS_HISTORY.adoc, PROCEDURES.adoc, SESSION_CHECKLIST.adoc, TEST_COVERAGE_ANALYSIS.adoc, LAZY_EAGER_ESSENTIALS.adoc
+. **Portefeuille transverse** — ajouter le nouveau projet dans le tableau Portefeuille de TOUS les INDEX.adoc des autres projets
 
 == Session Procedure
 
@@ -230,6 +310,7 @@ _Aucune etape ne peut etre marquee [✅] si le fichier n'a pas ete effectivement
 
 . Lire `PROMPT_REPRISE.adoc` pour la mission en cours
 . Lire `.agents/INDEX.adoc` pour les regles absolues et etat du projet
+. Lire `LAZY_EAGER_ESSENTIALS.adoc` pour la politique de chargement
 . Charger les fichiers LAZY si besoin
 
 === Fin de Session

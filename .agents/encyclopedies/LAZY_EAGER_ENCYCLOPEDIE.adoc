@@ -1,0 +1,80 @@
+= Méthodologie LAZY/EAGER — Encyclopédie Complète
+:jbake-status: COLD
+
+[abstract]
+--
+**Document de référence méthode** — Connaissance exhaustive sur le mécanisme LAZY/EAGER.
+**Stockage** : Froid (COLD) — jamais chargé automatiquement par l'agent. Humain seulement.
+
+Ce document est la version condensée de la méthodologie LAZY/EAGER pour le projet `jhipster-gradle-plugins`,
+adaptée du modèle de `magic_stick/`. Les détails opérationnels sont dans `PROCEDURES.adoc` (LAZY).
+--
+
+== Origine
+
+Méthodologie extraite du modèle `magic_stick/LAZY_EAGER_ESSENTIALS.adoc` et de son encyclopédie
+`magic_stick/.agents/encyclopedies/LAZY_EAGER_ENCYCLOPEDIE.adoc`, adaptée au contexte mono-repo
+jhipster-gradle-plugins (deux plugins Gradle Kotlin DSL : persistence + assistant).
+
+== Problème Résolu
+
+Les LLM ont une fenêtre de contexte limitée. Charger trop d'informations dilue l'attention,
+gaspille des tokens, et provoque des hallucinations.
+
+**Solution** : Séparer l'information en couches de disponibilité (EAGER/LAZY) et de fraîcheur (Hot/Warm/Cold).
+
+== Les 3 Couches de Défense
+
+. **EAGER/LAZY** — structure par *disponibilité* (tableau de bord vs manuel du propriétaire)
+. **Hot/Warm/Cold** — structure par *fraîcheur* (10 sessions actives vs références vs backup)
+. **ESSENTIALS/encyclopédie** — structure par *densité* (essentiel compact vs connaissance exhaustive)
+
+== Métaphore des 3 Étagères
+
+* **Étagère 1 (EAGER)** — le plan de travail : INDEX récent, PROMPT_REPRISE, règles absolues. Léger, immédiat.
+* **Étagère 2 (LAZY)** — la bibliothèque de consultation : références techniques, procédures, agents. Sur demande.
+* **Cave (`backup/`)** — les archives froides : tout ce qui est passé. Jamais chargé auto. Humain seulement.
+
+== Mécanisme Hot/Warm/Cold
+
+* **Hot (EAGER)** : 10 dernières sessions dans INDEX, PROMPT_REPRISE N+1, sessions N-1 et N, SESSIONS_HISTORY récent
+* **Warm (LAZY)** : références techniques, procédures, agents spécialisés (PLUGIN_DEVELOPER, BACKLOG_MANAGER)
+* **Cold (`backup/`)** : Sessions N-10 et antérieures — copie intégrale, sans transformation ni réindexation
+* **Cold (`encyclopedies/`)** : Connaissance thématique exhaustive — jamais chargé automatiquement, humain seulement
+
+== Règle de Rotation Backup
+
+Tous les ~10 sessions, déplacer le paquet de fichiers agents (INDEX, SESSIONS_HISTORY, COMPLETED_TASKS_ARCHIVE, sessions/)
+tel quel dans `backup/`. Stockage : `.agents/backup/Y{année}-sessions-{plage}/`.
+
+**Capteur automatique** :
+- N % 10 == 0 (session multiple de 10)
+- OU EAGER cumulé > 500 lignes
+
+== Audit du Contexte (5 étapes)
+
+. Mesurer : `wc -l` sur tous les fichiers EAGER. Total < 1000 lignes.
+. Identifier le suspect : fichier > 20% du total.
+. Auditer section par section : doublon ? jamais servi ? unique ?
+. Classifier : doublons → retirer, jamais utilisé → cold, unique → garder.
+. Splitter ou relocaliser : critique → ESSENTIALS. Tout le reste → `encyclopedies/`.
+
+== Spécificités Mono-Repo
+
+* Champ `Module` obligatoire dans les archives : `persistence | assistant | buildSrc | racine | multi`
+* Boundary de dépendances : `persistence/` lightweight, `assistant/` lourd (LangChain4j, Docker, pgvector, MCP)
+* 1 session = 1 module ou 1 EPIC bien définie
+* La stabilité de `persistence` est un prérequis au développement de `assistant`
+
+== Références
+
+* `AGENT.adoc` — Directives complètes (EAGER)
+* `LAZY_EAGER_ESSENTIALS.adoc` — Principes compacts (EAGER)
+* `.agents/PROCEDURES.adoc` — Templates détaillés fin de session (LAZY)
+* `.agents/SESSION_CHECKLIST.adoc` — Métriques et signaux de transition (LAZY)
+
+--
+**Document créé** : 2026-04-30
+**Projet** : jhipster-gradle-plugins
+**Modèle** : `magic_stick/.agents/encyclopedies/LAZY_EAGER_ENCYCLOPEDIE.adoc`
+**Statut** : COLD — Connaissance exhaustive, humain seulement

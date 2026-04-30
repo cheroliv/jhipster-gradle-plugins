@@ -68,8 +68,10 @@ Quand tu recois une tache a implementer :
 == References
 
 * `AGENT.adoc` — Directives completes, architecture, regles absolues
+* `LAZY_EAGER_ESSENTIALS.adoc` — Politique de chargement EAGER/LAZY
 * `PROMPT_REPRISE.adoc` — Mission session en cours
 * `.agents/INDEX.adoc` — Roadmap, EPICs, etat du projet
+* `.agents/PROCEDURES.adoc` — Templates fin de session
 * `gradle/libs.versions.toml` — Version catalog partage
 * `buildSrc/src/main/kotlin/jhipster.gradle-plugin-conventions.gradle.kts` — Convention plugin
 

@@ -1,0 +1,42 @@
+= Session 5 — Finalisation EPIC 5 Tests Persistence
+
+**Date** : 2026-05-01
+**Type** : feature
+**Module** : persistence
+**Score** : 9/10
+
+== Contexte
+
+EPIC 5 était à 90% (26 tests). Les `GenerateJdlTask` et `DockerTask` avaient leurs méthodes `private` non testées (gitignore patching, Kotlin TOML/buildSrc/builder patching, compose file discovery).
+
+== Modifications
+
+| Fichier | Nature |
+| `persistence/.../tasks/GenerateJdlTask.kt` | Méthodes `private` → `internal` + `@Internal` sur `gitignoreEntries` |
+| `persistence/.../tasks/DockerTask.kt` | `composeFileFor`, `up` → `internal` |
+| `persistence/.../tasks/GenerateJdlTaskTest.kt` | 2 → 19 tests (+17) |
+| `persistence/.../tasks/DockerTaskTest.kt` | 4 → 11 tests (+7) |
+
+== Nouveaux tests GenerateJdlTask
+
+- `ensureJdlInTarget` copie et ne copie pas si déjà présent
+- `validateInputs` lève erreur si JDL absent, crée dir si nécessaire
+- `gitignoreEntries` liste attendue (9 entrées)
+- `applyGitignoreEntries` ajoute, évite doublons, survit sans .gitignore
+- `patchLibsVersionsToml` met à jour kotlin, survit sans TOML
+- `patchBuildGradle` injecte jvmToolchain, n'ajoute pas si déjà présent
+- `patchBuildSrc` met à jour kotlin-gradle-plugin, survit sans buildSrc
+- `configureKotlin` orchestre les 3 patchs
+
+== Nouveaux tests DockerTask
+
+- `composeFileFor` priorité docker-compose.yml, fallback app.yml, null si absent
+- `execute` survit sans dir docker
+- `up` survit sans compose file
+- `dockerDir` résolu par défaut
+
+== Résultat
+
+`./gradlew :persistence:check` ✅ BUILD SUCCESSFUL
+
+Total : ~45 tests (6 TestKit + ~39 unitaires)

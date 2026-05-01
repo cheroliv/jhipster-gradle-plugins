@@ -12,13 +12,13 @@ _Derniere mise a jour_ : 2026-05-01
 | Classe de test | Type | Tests | Statut | Derniere MAJ
 | `JHipsterPersistencePluginTest` | TestKit | 6 | ✅ OK | 2026-05-01
 | `CleanCodebaseTaskTest` | unit | 3 | ✅ OK | 2026-05-01
-| `GenerateJdlTaskTest` | unit | 2 | ✅ OK | 2026-05-01
+| `GenerateJdlTaskTest` | unit | 19 | ✅ OK | 2026-05-01
 | `SyncCodebaseTaskTest` | unit | 4 | ✅ OK | 2026-05-01
-| `DockerTaskTest` | unit | 4 | ✅ OK | 2026-05-01
+| `DockerTaskTest` | unit | 11 | ✅ OK | 2026-05-01
 | `ProjectConventionsTest` | unit | 7 | ✅ OK | 2026-05-01
 |===
 
-**Total** : 26 tests (6 TestKit + 20 unitaires) répartis sur 6 classes
+**Total** : ~50 tests (6 TestKit + ~44 unitaires) repartis sur 6 classes
 
 === Assistant Plugin (`assistant/`)
 
@@ -33,5 +33,6 @@ _Derniere mise a jour_ : 2026-05-01
 
 |===
 | Session | Module | Tests ajoutes | Tests modifies | Couverture
-| 3 | persistence | 23 nouveaux (CleanCodebaseTaskTest, GenerateJdlTaskTest, SyncCodebaseTaskTest, DockerTaskTest, ProjectConventionsTest) + 3 nouveaux TestKit | 0 | 26 tests au total
+| 3 | persistence | 23 nouveaux + 3 TestKit | 0 | 26 tests
+| 5 | persistence | 17 GenerateJdlTask + 7 DockerTask | 0 | ~50 tests
 |===

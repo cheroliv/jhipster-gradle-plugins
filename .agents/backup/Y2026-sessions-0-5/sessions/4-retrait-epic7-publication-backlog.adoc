@@ -1,0 +1,21 @@
+= Session 4 — Retrait EPIC 7 (Publication) du Backlog
+
+**Date** : 2026-05-01
+**Type** : chore
+**Module** : racine
+
+== Fait
+
+* [INDEX.adoc] Retrait EPIC 7 — Publication v0.0.1 sur Gradle Plugin Portal ✅
+* [BACKLOG_MANAGER.adoc] Retrait EPIC 7 ✅
+* Discussion : publier n'est pas un EPIC (commande shell, pas une feature). Numérotation non harmonisée. ✅
+
+== Prochaine session
+
+* Session 5 — A definir par l'utilisateur. Options :
+  * **persistence** : EPIC 5 — Finaliser tests (reste 10%)
+  * **persistence** : EPIC 6 — Tests fonctionnels projet JHipster cible
+  * **persistence** : EPIC 8 — Documentation
+  * **assistant** : EPIC 2 — RAG pgvector
+  * **assistant** : EPIC 3 — Multi-provider LLM
+  * **assistant** : EPIC 5 — Tests intégrés + TestContainers

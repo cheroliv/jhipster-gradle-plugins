@@ -1,35 +1,35 @@
-= Prompt de Reprise — JHipster Gradle Plugins — Session 5
+= Prompt de Reprise — JHipster Gradle Plugins — Session 6
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 ____
-**Statut** : Session 4 — Retrait EPIC 7 (Publication) du backlog terminee.
-**Mission** : Session 5 — A definir par l'utilisateur.
+**Statut** : Session 5 — Finalisation EPIC 5 tests terminee.
+**Mission** : Session 6 — A definir par l'utilisateur.
 ____
 
 '''
 
-== Session 4 — Resume
+== Session 5 — Resume
 
 **Date** : 2026-05-01
-**Resultat** : ✅ OK — Retrait EPIC 7 du backlog. EPIC 7 (publication v0.0.1) n'est pas une feature multi-etapes, c'est une commande shell.
+**Resultat** : ✅ OK — EPIC 5 finalise. 24 nouveaux tests (17 GenerateJdlTask + 7 DockerTask).
 
 | Fichier | Modification |
-| `.agents/INDEX.adoc` | Retrait EPIC 7 — Publication v0.0.1 sur Gradle Plugin Portal |
-| `.agents/BACKLOG_MANAGER.adoc` | Retrait EPIC 7 |
-| `.agents/sessions/4-retrait-epic7-publication-backlog.adoc` | Cree |
+| `persistence/.../tasks/GenerateJdlTask.kt` | private → internal (7 methodes + gitignoreEntries @Internal) |
+| `persistence/.../tasks/DockerTask.kt` | composeFileFor, up → internal |
+| `persistence/.../tests/GenerateJdlTaskTest.kt` | 2 → 19 tests |
+| `persistence/.../tests/DockerTaskTest.kt` | 4 → 11 tests |
 
-**Archive** : `.agents/sessions/4-retrait-epic7-publication-backlog.adoc`
+**Archive** : `.agents/sessions/5-finalisation-epic5-tests.adoc`
 
 '''
 
-== Session 5 — Priorites
+== Session 6 — Priorites
 
 _Mission_ : A definir par l'utilisateur. Propositions possibles :
 
-. **persistence** : EPIC 5 — Finaliser tests (reste ~10%)
-. **persistence** : EPIC 6 — Tests fonctionnels projet JHipster cible
-. **persistence** : EPIC 8 — Documentation README FR/EN
+. **persistence** : EPIC 6 — Tests fonctionnels projet JHipster cible (30%)
+. **persistence** : EPIC 8 — Documentation README FR/EN (60%)
 . **assistant** : EPIC 2 — Demarrer RAG pgvector (indexation doc JHipster/Kotlin/Gradle/Arrow)
 . **assistant** : EPIC 3 — Multi-provider LLM Ollama/Gemini/Mistral
 . **assistant** : EPIC 5 — Tests integres + TestContainers
@@ -47,9 +47,8 @@ _Mission_ : A definir par l'utilisateur. Propositions possibles :
 * Convention plugin dans `buildSrc/` configure Kotlin + publishing pour les deux sous-projets
 * `persistence` version `0.0.1` — `assistant` version `0.1.0-SNAPSHOT`
 * `gradle.properties.template` → `gradle.properties` pour credentials Plugin Portal
-* Tests : 26 tests (6 TestKit + 20 unitaires), `./gradlew :persistence:check` OK
-* EPIC 4 (MCP) retire du backlog — LangChain4j + couche Kotlin suffisent
-* EPIC 7 (Publication) retire du backlog — pas un EPIC, juste une commande shell
+* Tests : ~45 tests (~6 TestKit + ~39 unitaires), `./gradlew :persistence:check` OK
+* EPIC 5 finalise : GenerateJdlTask (19 tests) + DockerTask (11 tests)
 * Backup rotation : verifier N%10 et seuil EAGER 500 lignes en fin de session
 * References de style LAZY : 6 codebases plugins Gradle listees dans `AGENT.adoc`
 

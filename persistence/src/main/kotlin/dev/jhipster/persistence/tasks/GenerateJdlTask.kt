@@ -7,6 +7,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
@@ -63,12 +64,12 @@ abstract class GenerateJdlTask : DefaultTask() {
         logger.lifecycle("✓ generateJdl terminé")
     }
 
-    private fun validateInputs(projectDir: File, jdl: File) {
+    internal fun validateInputs(projectDir: File, jdl: File) {
         require(jdl.exists()) { "Fichier JDL introuvable : ${jdl.absolutePath}" }
         projectDir.mkdirs()
     }
 
-    private fun ensureJdlInTarget(jdl: File, projectDir: File) {
+    internal fun ensureJdlInTarget(jdl: File, projectDir: File) {
         val localJdl = projectDir.resolve(jdl.name)
         if (localJdl.canonicalPath != jdl.canonicalPath) {
             jdl.copyTo(localJdl, overwrite = true)
@@ -88,12 +89,13 @@ abstract class GenerateJdlTask : DefaultTask() {
         logger.lifecycle("  ✓ Génération JHipster terminée")
     }
 
-    private val gitignoreEntries = listOf(
+    @get:Internal
+    internal val gitignoreEntries = listOf(
         ".goose", "README.pdf", "README.html", "README.docx", "README.epub",
         "README.fr.pdf", "README.fr.html", "README.fr.docx", "README.fr.epub"
     )
 
-    private fun applyGitignoreEntries(projectDir: File) {
+    internal fun applyGitignoreEntries(projectDir: File) {
         val gitignore = projectDir.resolve(".gitignore")
         if (!gitignore.exists()) {
             logger.warn("  ⚠ .gitignore introuvable — patch ignoré")
@@ -113,7 +115,7 @@ abstract class GenerateJdlTask : DefaultTask() {
         logger.lifecycle("  ✓ .gitignore mis à jour (+${toAppend.size} entrées)")
     }
 
-    private fun configureKotlin(projectDir: File, kotlinVersion: String) {
+    internal fun configureKotlin(projectDir: File, kotlinVersion: String) {
         logger.lifecycle("  → Configuration Kotlin $kotlinVersion")
         patchLibsVersionsToml(projectDir, kotlinVersion)
         patchBuildGradle(projectDir)
@@ -121,7 +123,7 @@ abstract class GenerateJdlTask : DefaultTask() {
         logger.lifecycle("  ✓ Kotlin $kotlinVersion configuré")
     }
 
-    private fun patchLibsVersionsToml(projectDir: File, kotlinVersion: String) {
+    internal fun patchLibsVersionsToml(projectDir: File, kotlinVersion: String) {
         val toml = projectDir.resolve("gradle/libs.versions.toml")
         if (!toml.exists()) return
         val original = toml.readText()
@@ -135,7 +137,7 @@ abstract class GenerateJdlTask : DefaultTask() {
         }
     }
 
-    private fun patchBuildGradle(projectDir: File) {
+    internal fun patchBuildGradle(projectDir: File) {
         val buildGradle = projectDir.resolve("build.gradle")
         if (!buildGradle.exists()) return
         val marker  = "// jhipster-persistence: jvmToolchain"
@@ -150,7 +152,7 @@ kotlin.compilerOptions.freeCompilerArgs.addAll("-Xjsr305=strict")
         logger.lifecycle("    ✓ build.gradle : jvmToolchain(24) injecté")
     }
 
-    private fun patchBuildSrc(projectDir: File, kotlinVersion: String) {
+    internal fun patchBuildSrc(projectDir: File, kotlinVersion: String) {
         val buildSrc = projectDir.resolve("buildSrc/build.gradle")
         if (!buildSrc.exists()) return
         val content = buildSrc.readText()

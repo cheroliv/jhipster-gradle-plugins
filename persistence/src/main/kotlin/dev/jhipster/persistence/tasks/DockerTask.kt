@@ -58,7 +58,7 @@ abstract class DockerTask : DefaultTask() {
         }
     }
 
-    private fun up(dir: File, composeFile: File?) {
+    internal fun up(dir: File, composeFile: File?) {
         logger.lifecycle("=== dockerUp : stack complète ===")
         if (composeFile == null) {
             logger.warn("  ⚠ Aucun fichier docker-compose trouvé dans ${dir.absolutePath}")
@@ -103,7 +103,7 @@ abstract class DockerTask : DefaultTask() {
         logger.lifecycle("✓ Stack arrêtée")
     }
 
-    private fun composeFileFor(dir: File): File? =
+    internal fun composeFileFor(dir: File): File? =
         listOf("docker-compose.yml", "app.yml")
             .map { dir.resolve(it) }
             .firstOrNull { it.exists() }

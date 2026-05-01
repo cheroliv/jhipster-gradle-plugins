@@ -1,0 +1,40 @@
+= Session 1 — Implantation Strategie Backup Rotation
+
+**Date** : 2026-04-30
+**Statut** : ✅ TERMINEE
+**Module** : racine
+
+---
+
+== Contexte
+
+L'audit du portefeuille de projets (lancé depuis cheroliv.com) a révélé que jhipster-gradle-plugins était le seul projet sans la stratégie de backup rotation. Correction.
+
+---
+
+== Actions Entreprises
+
+**Fichiers modifiés** :
+| Fichier | Modification |
+| `AGENT.adoc` | + étape 7 dans checklist de confirmation |
+| `.agents/PROCEDURES.adoc` | + `backup/*/` dans table LAZY, + étape 7 checklist |
+
+**Détail** :
+- Checklist confirmation AGENT.adoc : ajout ligne `[✅] 7. Backup rote (si applicable)`
+- Table fichiers LAZY dans PROCEDURES.adoc : ajout `| .agents/backup/*/ | LAZY | Illimite | Vagues froides (rotation)`
+- Checklist PROCEDURES.adoc : ajout `[✅] 7. Backup rote (si applicable)`
+
+Le mécanisme Hot/Warm/Cold Storage et le Capteur de Rotation Backup (étape 7) étaient déjà présents dans AGENT.adoc — il manquait juste l'étape 7 dans les checklists de confirmation et la ligne backup/*/ dans la table LAZY.
+
+---
+
+== Prochaines Etapes (Session 2)
+
+. **persistence** : EPIC 5 — Renforcer tests unitaires + TestKit
+. **persistence** : EPIC 7 — Publication v0.0.1 sur Gradle Plugin Portal
+. **assistant** : EPIC 2 — RAG pgvector
+
+---
+
+**Session 1** — ✅
+**Session 2** — à définir par l'utilisateur

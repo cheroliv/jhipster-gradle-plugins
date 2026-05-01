@@ -1,35 +1,42 @@
-= Prompt de Reprise — JHipster Gradle Plugins — Session 2
+= Prompt de Reprise — JHipster Gradle Plugins — Session 4
 
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 ____
-**Statut** : Session 1 — Implantation strategie backup rotation terminee.
-**Mission** : Session 2 — A definir par l'utilisateur.
+**Statut** : Session 3 — Renforcement tests unitaires EPIC 5 & 6 terminee.
+**Mission** : Session 4 — A definir par l'utilisateur.
 ____
 
 '''
 
-== Session 1 — Resume
+== Session 3 — Resume
 
-**Date** : 2026-04-30
-**Resultat** : ✅ OK — Strategie backup rotation alignee avec le portefeuille de projets.
+**Date** : 2026-05-01
+**Resultat** : ✅ OK — 5 classes de test creees, 26 tests au total. + retrait EPIC 4 MCP.
 
 | Fichier | Modification |
-| `AGENT.adoc` | + etape 7 dans checklist confirmation |
-| `.agents/PROCEDURES.adoc` | + backup/*/ table LAZY + etape 7 checklist |
+| `CleanCodebaseTaskTest.kt` | Cree (3 tests) |
+| `GenerateJdlTaskTest.kt` | Cree (2 tests) |
+| `SyncCodebaseTaskTest.kt` | Cree (4 tests) |
+| `DockerTaskTest.kt` | Cree (4 tests) |
+| `ProjectConventionsTest.kt` | Cree (7 tests) |
+| `JHipsterPersistencePluginTest.kt` | +3 tests TestKit |
+| `.agents/INDEX.adoc` | Retrait EPIC 4 MCP |
+| `.agents/BACKLOG_MANAGER.adoc` | Retrait EPIC 4 MCP |
+| `.agents/TEST_COVERAGE_ANALYSIS.adoc` | Mise a jour complete |
 
-**Archive** : `.agents/sessions/1-implantation-strategie-backup-rotation.adoc`
+**Archive** : `.agents/sessions/3-renforcement-tests-unitaires-epic5-6.adoc`
 
 '''
 
-== Session 2 — Priorites
+== Session 4 — Priorites
 
 _Mission_ : A definir par l'utilisateur. Propositions possibles :
 
-. **persistence** : EPIC 5 — Renforcer tests unitaires CleanCodebaseTask, GenerateJdlTask, SyncCodebaseTask
 . **persistence** : EPIC 7 — Publication v0.0.1 sur Gradle Plugin Portal (necessite `gradle.properties` avec credentials)
-. **persistence** : Tests fonctionnels avec Gradle TestKit (projet JHipster cible)
-. **assistant** : EPIC 2 — Demarrer RAG pgvector (indexation doc JHipster/Kotlin/Gradle)
+. **assistant** : EPIC 2 — Demarrer RAG pgvector (indexation doc JHipster/Kotlin/Gradle/Arrow)
+. **assistant** : EPIC 3 — Multi-provider LLM Ollama/Gemini/Mistral
+. **assistant** : EPIC 5 — Tests integres + TestContainers
 
 === Criteres d'Acceptation (session a definir)
 
@@ -44,7 +51,10 @@ _Mission_ : A definir par l'utilisateur. Propositions possibles :
 * Convention plugin dans `buildSrc/` configure Kotlin + publishing pour les deux sous-projets
 * `persistence` version `0.0.1` — `assistant` version `0.1.0-SNAPSHOT`
 * `gradle.properties.template` → `gradle.properties` pour credentials Plugin Portal
+* Tests : 26 tests (6 TestKit + 20 unitaires), `./gradlew :persistence:check` OK
+* EPIC 4 (MCP) retire du backlog — LangChain4j + couche Kotlin suffisent
 * Backup rotation : verifier N%10 et seuil EAGER 500 lignes en fin de session
+* References de style LAZY : 6 codebases plugins Gradle listees dans `AGENT.adoc`
 
 == Regles
 

@@ -1,0 +1,69 @@
+= Session 3 — Renforcement Tests Unitaires EPIC 5 & 6
+
+**Date** : 2026-05-01
+**Type** : feature
+**Module** : persistence
+**Score** : 9/10
+
+'''
+
+== Contexte
+
+EPIC 5 (Tests unitaires + TestKit) à 50% et EPIC 6 (Tests fonctionnels TestKit) à 0%.
+Mission : renforcer significativement les tests existants, sans toucher à EPIC 7 (publication).
+
+== Actions
+
+=== Création de 5 nouvelles classes de test
+
+| Fichier | Tests | Description |
+| `CleanCodebaseTaskTest.kt` | 3 | Suppression répertoires/fichiers JHipster, edge cases |
+| `GenerateJdlTaskTest.kt` | 2 | Configuration par défaut (nvm, Kotlin), copie JDL |
+| `SyncCodebaseTaskTest.kt` | 4 | Sync fichiers/répertoires, nettoyage build/.gradle |
+| `DockerTaskTest.kt` | 4 | Modes UP_ALL/UP_DB/DOWN, enum distincts |
+| `ProjectConventionsTest.kt` | 7 | Résolution chemins (JDL, codebase, docker), validate, fichiers Docker |
+
+=== Renforcement JHipsterPersistencePluginTest
+
+| Test ajouté | Type |
+| `syncCodebase synchronise __codebase__` | TestKit |
+| `erreur explicite sans projet JHipster` | TestKit (buildAndFail) |
+| `cleanCodebase préserve __codebase__ avec fichiers cachés` | TestKit |
+
+=== Nettoyage Roadmap — Retrait EPIC 4 (MCP)
+
+Décision architecturale : MCP est hors scope. Retiré de INDEX.adoc et BACKLOG_MANAGER.adoc.
+Raisonnement : LangChain4j + couche Kotlin typée + Jackson suffisent dans le lifecycle Gradle.
+
+'''
+
+== Résultat
+
+- `./gradlew :persistence:check` — BUILD SUCCESSFUL
+- 26 tests au total (6 TestKit + 20 unitaires)
+- EPIC 5 passe de 50% → ~90%
+- EPIC 6 passe de 0% → ~30%
+
+'''
+
+== Fichiers Modifiés
+
+| Fichier | Action |
+| `persistence/src/test/kotlin/.../tasks/CleanCodebaseTaskTest.kt` | Créé |
+| `persistence/src/test/kotlin/.../tasks/GenerateJdlTaskTest.kt` | Créé |
+| `persistence/src/test/kotlin/.../tasks/SyncCodebaseTaskTest.kt` | Créé |
+| `persistence/src/test/kotlin/.../tasks/DockerTaskTest.kt` | Créé |
+| `persistence/src/test/kotlin/.../ProjectConventionsTest.kt` | Créé |
+| `persistence/src/test/kotlin/.../JHipsterPersistencePluginTest.kt` | +3 tests |
+| `.agents/INDEX.adoc` | Retrait EPIC 4 MCP |
+| `.agents/BACKLOG_MANAGER.adoc` | Retrait EPIC 4 MCP |
+| `.agents/TEST_COVERAGE_ANALYSIS.adoc` | Mise à jour complète |
+
+'''
+
+== Prochaine Session
+
+Backlog restant :
+- **EPIC 7** — Publication v0.0.1 sur Plugin Portal (P0, bloqué credentials)
+- **EPIC 8** — Documentation READMEs (P2, non prioritaire)
+- **Assistant EPIC 2-3-5** — RAG pgvector, LLM multi-provider, TestContainers

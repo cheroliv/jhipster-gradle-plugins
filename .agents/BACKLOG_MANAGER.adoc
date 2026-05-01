@@ -75,7 +75,6 @@ Two complementary plugins cover the entire lifecycle:
 
 * **EPIC 2** : RAG pgvector — indexation doc JHipster/Kotlin/Gradle/Arrow (P1)
 * **EPIC 3** : Multi-provider LLM Ollama/Gemini/Mistral (P1)
-* **EPIC 4** : Serveur MCP HTTP SSE (P2)
 * **EPIC 5** : Tests integres + TestContainers (P1)
 
 === Build / Gouvernance

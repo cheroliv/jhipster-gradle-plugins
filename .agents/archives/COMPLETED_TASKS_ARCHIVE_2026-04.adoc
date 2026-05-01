@@ -31,3 +31,19 @@
 === Prochaine session
 * [persistence] EPIC 5 — Renforcer tests unitaires + TestKit
 * [persistence] EPIC 7 — Publication v0.0.1 Plugin Portal
+
+---
+
+== Session 2 — Ajout Codebases Reference Style LAZY — Module: racine + transverse
+
+=== Fait
+* [AGENT.adoc] + section "References de Style — Codebases LAZY" (6 projets dans table) ✅
+* [bakery-gradle/bakery-plugin/AGENT.adoc] + section + table ✅
+* [cheroliv.com/AGENT.adoc] + section + table ✅
+* [magic_stick/AGENT.adoc] + section + table ✅
+* [quizz-benchmark-plugin/AGENT.adoc] + section + table ✅
+* [plantuml-gradle/plantuml-plugin/AGENT.adoc] + section + table ✅
+* [persistence] publishToMavenLocal ✅
+
+=== Prochaine session
+* A definir par l'utilisateur (EPIC 5 tests ou EPIC 7 publication prioritaires)

@@ -126,4 +126,63 @@ class JHipsterPersistencePluginTest {
         assertTrue(edsterDir.resolve("__codebase__").exists(),  "__codebase__/ doit rester intact")
         assertTrue(codebaseFile.exists(),                       "Le code métier dans __codebase__/ doit survivre")
     }
+
+    @Test
+    fun `syncCodebase synchronise le contenu de __codebase__ vers le projet`() {
+        edsterDir.resolve("__codebase__/build.gradle").writeText("// custom build")
+        edsterDir.resolve("__codebase__/src/main/kotlin").mkdirs()
+        edsterDir.resolve("__codebase__/src/main/kotlin/Service.kt").writeText("// business code")
+
+        edsterDir.resolve("build.gradle").writeText("// generated")
+        edsterDir.resolve("src/main/kotlin").mkdirs()
+
+        val result = GradleRunner.create()
+            .withProjectDir(pluginDir)
+            .withPluginClasspath()
+            .withArguments("syncCodebase")
+            .build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":syncCodebase")?.outcome)
+        assertEquals("// custom build", edsterDir.resolve("build.gradle").readText())
+        assertTrue(edsterDir.resolve("src/main/kotlin/Service.kt").exists())
+    }
+
+    @Test
+    fun `le plugin lève une erreur explicite sans projet JHipster`(@TempDir orphanParent: File) {
+        val orphanWorkspace = orphanParent.resolve("orphan").also { it.mkdirs() }
+        orphanWorkspace.resolve("settings.gradle.kts").writeText("""rootProject.name = "orphan"""")
+        orphanWorkspace.resolve("build.gradle.kts").writeText("""plugins { id("com.cheroliv.jhipster.persistence") }""")
+
+        val result = GradleRunner.create()
+            .withProjectDir(orphanWorkspace)
+            .withPluginClasspath()
+            .withArguments("tasks")
+            .buildAndFail()
+
+        assertTrue(
+            ".yo-rc.json" in result.output || "JHipster" in result.output,
+            "Le message d'erreur doit mentionner JHipster ou .yo-rc.json\nOutput:\n${result.output}"
+        )
+    }
+
+    @Test
+    fun `cleanCodebase préserve __codebase__ même en présence de fichiers cachés`() {
+        edsterDir.resolve("build").mkdirs()
+        edsterDir.resolve(".gradle").mkdirs()
+        edsterDir.resolve(".jhipster").mkdirs()
+        edsterDir.resolve("__codebase__/.hidden/cache").mkdirs()
+        edsterDir.resolve("__codebase__/.hidden/config.yaml").writeText("key: value")
+
+        val result = GradleRunner.create()
+            .withProjectDir(pluginDir)
+            .withPluginClasspath()
+            .withArguments("cleanCodebase")
+            .build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":cleanCodebase")?.outcome)
+        assertTrue(!edsterDir.resolve("build").exists())
+        assertTrue(!edsterDir.resolve(".gradle").exists())
+        assertTrue(!edsterDir.resolve(".jhipster").exists())
+        assertTrue(edsterDir.resolve("__codebase__/.hidden/config.yaml").exists())
+    }
 }

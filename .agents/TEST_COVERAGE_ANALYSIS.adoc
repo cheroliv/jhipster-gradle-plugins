@@ -1,6 +1,6 @@
 = Analyse de Couverture de Tests — JHipster Gradle Plugins
 
-_Derniere mise a jour_ : 2026-04-28
+_Derniere mise a jour_ : 2026-05-01
 
 '''
 
@@ -10,13 +10,15 @@ _Derniere mise a jour_ : 2026-04-28
 
 |===
 | Classe de test | Type | Tests | Statut | Derniere MAJ
-| `JHipsterPersistencePluginTest` | unit | - | 🟡 A completer | 2026-04-28
-| `CleanCodebaseTaskTest` | unit | - | 🔴 A creer | -
-| `GenerateJdlTaskTest` | unit | - | 🔴 A creer | -
-| `SyncCodebaseTaskTest` | unit | - | 🔴 A creer | -
-| `DockerTaskTest` | unit | - | 🔴 A creer | -
-| `ProjectConventionsTest` | unit | - | 🔴 A creer | -
+| `JHipsterPersistencePluginTest` | TestKit | 6 | ✅ OK | 2026-05-01
+| `CleanCodebaseTaskTest` | unit | 3 | ✅ OK | 2026-05-01
+| `GenerateJdlTaskTest` | unit | 2 | ✅ OK | 2026-05-01
+| `SyncCodebaseTaskTest` | unit | 4 | ✅ OK | 2026-05-01
+| `DockerTaskTest` | unit | 4 | ✅ OK | 2026-05-01
+| `ProjectConventionsTest` | unit | 7 | ✅ OK | 2026-05-01
 |===
+
+**Total** : 26 tests (6 TestKit + 20 unitaires) répartis sur 6 classes
 
 === Assistant Plugin (`assistant/`)
 
@@ -31,5 +33,5 @@ _Derniere mise a jour_ : 2026-04-28
 
 |===
 | Session | Module | Tests ajoutes | Tests modifies | Couverture
-| - | - | - | - | -
+| 3 | persistence | 23 nouveaux (CleanCodebaseTaskTest, GenerateJdlTaskTest, SyncCodebaseTaskTest, DockerTaskTest, ProjectConventionsTest) + 3 nouveaux TestKit | 0 | 26 tests au total
 |===

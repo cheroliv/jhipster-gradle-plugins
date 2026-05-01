@@ -16,4 +16,13 @@
 * Total : 26 tests (6 TestKit + 20 unitaires) sur 6 classes
 
 === Prochaine session
-* A definir par l'utilisateur (EPIC 7 publication ou Assistant EPIC 2-3-5)
+* A definir par l'utilisateur
+
+== Session 4 — Retrait EPIC 7 (Publication) du Backlog — Module: racine
+
+=== Fait
+* [INDEX.adoc] Retrait EPIC 7 — Publication v0.0.1 sur Gradle Plugin Portal ✅
+* [BACKLOG_MANAGER.adoc] Retrait EPIC 7 ✅
+
+=== Prochaine session
+* A definir par l'utilisateur (persistence EPIC 5/6/8 ou assistant EPIC 2/3/5)

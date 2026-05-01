@@ -68,7 +68,6 @@ Two complementary plugins cover the entire lifecycle:
 
 * **EPIC 5** : Tests unitaires + TestKit (P1) — Tests a renforcer
 * **EPIC 6** : Tests fonctionnels projet JHipster cible (P2)
-* **EPIC 7** : Publication v0.0.1 sur Plugin Portal (P0 — credentials necessaires)
 * **EPIC 8** : Documentation README FR/EN (P2)
 
 === Assistant

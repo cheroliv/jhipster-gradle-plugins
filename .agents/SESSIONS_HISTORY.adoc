@@ -7,4 +7,5 @@
 | 1 | 2026-04-30 | feature | Implantation strategie backup rotation (Hot/Warm/Cold + etape 7) | racine | 8/10
 | 2 | 2026-05-01 | feature | Ajout codebases reference de style LAZY (6 AGENT.adoc modifies, publishToMavenLocal) | racine + transverse | 9/10
 | 3 | 2026-05-01 | feature | Renforcement tests unitaires EPIC 5 & 6 (5 classes creees, 26 tests total, retrait EPIC 4 MCP) | persistence | 9/10
+| 4 | 2026-05-01 | chore | Retrait EPIC 7 du backlog (publier n'est pas un EPIC, c'est une commande shell) | racine | 9/10
 |===

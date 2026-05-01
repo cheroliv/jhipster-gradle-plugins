@@ -3,8 +3,8 @@
 _Regles absolues_ : voir `AGENT.adoc` section "Regles Absolues"
 
 _Derniere mise a jour_ : 2026-05-01
-_Session en cours_ : 4 — A definir par l'utilisateur
-_Session terminee_ : 3 — Renforcement tests unitaires EPIC 5 & 6 (5 classes creees, 26 tests, retrait EPIC 4 MCP)
+_Session en cours_ : 5 — A definir par l'utilisateur
+_Session terminee_ : 4 — Retrait EPIC 7 du backlog (publier n'est pas un EPIC)
 
 _Localisation active_ : `.agents/INDEX.adoc` (sessions recentes), `.agents/SESSIONS_HISTORY.adoc` (historique), `.agents/sessions/` (archives)
 
@@ -113,6 +113,7 @@ Si on casse ca, tout le design du mono-repo s'effondre.
 | 1 | 2026-04-30 | feature | Implantation strategie backup rotation (Hot/Warm/Cold + etape 7) | 8/10
 | 2 | 2026-05-01 | feature | Ajout codebases reference de style LAZY (6 AGENT.adoc modifies, publishToMavenLocal) | 9/10
 | 3 | 2026-05-01 | feature | Renforcement tests EPIC 5 & 6 (5 classes creees, 26 tests, retrait EPIC 4 MCP) | 9/10
+| 4 | 2026-05-01 | chore | Retrait EPIC 7 du backlog (publier n'est pas un EPIC) | 9/10
 |===
 
 '''
@@ -138,7 +139,6 @@ Si on casse ca, tout le design du mono-repo s'effondre.
 | EPIC 4 : Task Docker (dockerDb, dockerUp, dockerDown) | ✅ 100% | 9/10 | ✅ TERMINE
 | EPIC 5 : Tests unitaires + TestKit | 🟡 90% | - | 🟡 P1 — Tests renforces (26 tests)
 | EPIC 6 : Tests fonctionnels projet JHipster cible | 🟡 30% | - | 🟡 P2 — Tests TestKit ajoutes
-| EPIC 7 : Publication v0.0.1 sur Gradle Plugin Portal | 🟡 0% | - | 🟡 P0 — A FAIRE (credentials necessaires)
 | EPIC 8 : Documentation (README FR/EN, doc.adoc) | 🟡 60% | - | 🟡 P2 — READMEs existent, retouche
 |===
 
@@ -192,7 +192,7 @@ Projets gerant la meme methodologie opencode (EAGER/LAZY, procedure de fin de se
 | cheroliv.com | `~/workspace/__repositories__/cheroliv.com` | 10 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
 | plantuml-gradle | `~/workspace/__repositories__/plantuml-gradle/plantuml-plugin` | 133 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
 | openclaw-codingame | `~/workspace/__repositories__/openclaw-codingame` | - | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
-| **jhipster-gradle-plugins** | `~/workspace/__repositories__/jhipster-gradle-plugins` | **2** | TEST_COVERAGE_ANALYSIS.adoc | **2026-04-30**
+| **jhipster-gradle-plugins** | `~/workspace/__repositories__/jhipster-gradle-plugins` | **4** | TEST_COVERAGE_ANALYSIS.adoc | **2026-05-01**
 |===
 
 _Procedure de fin de session commune_ :

@@ -22,7 +22,7 @@ avec le marquage LAZY sur les chemins pour ne jamais charger leur contenu automa
 * [bakery-gradle/bakery-plugin/AGENT.adoc] + section + table + "(ce projet)" ✅
 * [cheroliv.com/AGENT.adoc] + section + table ✅
 * [magic_stick/AGENT.adoc] + section + table ✅
-* [openclaw-codingame/quizz-benchmark-plugin/AGENT.adoc] + section + table ✅
+* [quizz-benchmark-gradle/quizz-benchmark-plugin/AGENT.adoc] + section + table ✅
 * [plantuml-gradle/plantuml-plugin/AGENT.adoc] + section + table + "(ce projet)" ✅
 
 === Publication

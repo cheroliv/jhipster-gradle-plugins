@@ -192,7 +192,7 @@ Projets gerant la meme methodologie opencode (EAGER/LAZY, procedure de fin de se
 | bakery-gradle | `~/workspace/__repositories__/bakery-gradle/bakery-plugin` | 11 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
 | cheroliv.com | `~/workspace/__repositories__/cheroliv.com` | 10 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
 | plantuml-gradle | `~/workspace/__repositories__/plantuml-gradle/plantuml-plugin` | 133 | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
-| openclaw-codingame | `~/workspace/__repositories__/openclaw-codingame` | - | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
+| quizz-benchmark-gradle | `~/workspace/__repositories__/quizz-benchmark-gradle` | - | TEST_COVERAGE_ANALYSIS.adoc | 2026-04-27
 | **jhipster-gradle-plugins** | `~/workspace/__repositories__/jhipster-gradle-plugins` | **5** | TEST_COVERAGE_ANALYSIS.adoc | **2026-05-01**
 |===
 

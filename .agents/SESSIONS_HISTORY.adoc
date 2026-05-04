@@ -10,3 +10,4 @@
 | 4 | 2026-05-01 | chore | Retrait EPIC 7 du backlog (publier n'est pas un EPIC, c'est une commande shell) | racine | 9/10
 | 5 | 2026-05-01 | feature | Finalisation EPIC 5 — tests GenerateJdlTask (19) + DockerTask (11), ~45 tests total | persistence | 9/10
 |===
+| 007 | 2026-05-04 | governance | Renommage openclaw→quizz-benchmark | -

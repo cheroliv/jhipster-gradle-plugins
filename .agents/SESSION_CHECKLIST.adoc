@@ -33,6 +33,7 @@ Ne JAMAIS lancer `./gradlew check` en fin de session sans demande explicite.
 . Mettre a jour `INDEX.adoc` (session en cours, roadmap, sessions recentes)
 . Mettre a jour `TEST_COVERAGE_ANALYSIS.adoc` (si applicable)
 . Mettre a jour `COMPLETED_TASKS_ARCHIVE.adoc` `.agents/archives/COMPLETED_TASKS_ARCHIVE_{mois}.adoc`
+. 🔑 *Classifier Vision/Opinion/Stratégie* : dilution ou blog → LLM segmente AVANT
 
 === 3. Commiter (optionnel mais recommande) — _Utilisateur uniquement_
 

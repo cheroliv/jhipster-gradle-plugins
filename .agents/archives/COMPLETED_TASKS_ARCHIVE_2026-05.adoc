@@ -41,3 +41,4 @@
 
 === Prochaine session
 * A definir par l'utilisateur
+| 2026-05-04 | 007 | governance | Renommage openclaw-codingame → quizz-benchmark-gradle (gouvernance) |

@@ -204,3 +204,4 @@ _Procedure de fin de session commune_ :
 . ✅ Mettre a jour `INDEX.adoc` (session en cours, roadmap, fichiers)
 . ✅ Mettre a jour `TEST_COVERAGE_ANALYSIS.adoc` (si tests ajoutes/modifies)
 . ✅ Mettre a jour `COMPLETED_TASKS_ARCHIVE_{mois}.adoc`
+| 007 | 2026-05-04 | governance | renommage openclaw→quizz-benchmark | —

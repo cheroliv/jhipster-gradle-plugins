@@ -11,3 +11,4 @@
 | 5 | 2026-05-01 | feature | Finalisation EPIC 5 — tests GenerateJdlTask (19) + DockerTask (11), ~45 tests total | persistence | 9/10
 |===
 | 007 | 2026-05-04 | governance | Renommage openclaw→quizz-benchmark | -
+| 008 | 2026-05-07 | chore | Migration chemins foundry/ → foundry/OSS/ dans INDEX.adoc (granularisation OSS/CSS) | -

@@ -42,3 +42,4 @@
 === Prochaine session
 * A definir par l'utilisateur
 | 2026-05-04 | 007 | governance | Renommage openclaw-codingame → quizz-benchmark-gradle (gouvernance) |
+| 2026-05-07 | 007 | chore | Migration chemins foundry/ → foundry/OSS/ dans INDEX.adoc — granularisation OSS/CSS |

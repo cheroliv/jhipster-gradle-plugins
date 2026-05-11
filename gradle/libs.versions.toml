@@ -14,8 +14,8 @@ junit-platform = "1.12.2"
 testcontainers = "1.20.4"
 
 # ── Assistant uniquement — LangChain4j, pgvector, Docker ──────────────────────
-langchain4j = "1.12.1"
-langchain4j-beta = "1.12.2-beta22"
+langchain4j = "1.14.1"
+langchain4j-beta = "1.14.1-beta24"
 docker-java = "3.3.6"
 postgresql-jdbc = "42.7.4"
 kotlinx-coroutines = "1.9.0"

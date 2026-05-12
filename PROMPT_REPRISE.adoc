@@ -27,7 +27,7 @@ ____
 == Session 007 — Migration chemins OSS/CSS (inter-session chore)
 
 **Date** : 2026-05-07 | **Type** : chore
-**Resultat** : ✅ INDEX.adoc — remplacement `foundry/` → `foundry/OSS/` pour granularisation OSS/CSS.
+**Resultat** : ✅ INDEX.adoc — remplacement `foundry/` → `foundry/public/` pour granularisation OSS/CSS.
 Migration transverse sur 9 repos. Commit + push.
 
 '''

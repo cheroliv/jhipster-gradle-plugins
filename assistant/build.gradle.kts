@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-group = "com.cheroliv"
+group = "education.cccp"
 
 version = libs.versions.assistant.get()
 

@@ -16,7 +16,7 @@ plugins {
     id("jhipster.gradle-plugin-conventions")
 }
 
-group = "com.cheroliv"
+group = "education.cccp"
 
 version = libs.versions.persistence.get()
 
@@ -33,7 +33,7 @@ gradlePlugin {
     vcsUrl  = "https://github.com/cheroliv/jhipster-gradle-plugins"
     plugins {
         create("jhipsterPersistence") {
-            id                  = "com.cheroliv.jhipster.persistence"
+            id = "education.cccp.jhipster.persistence"
             implementationClass = "dev.jhipster.persistence.JHipsterPersistencePlugin"
             displayName         = "JHipster Persistence Plugin"
             description         = """
@@ -62,9 +62,9 @@ publishing {
                     }
                     developers {
                         developer {
-                            id.set("cheroliv")
-                            name.set("cheroliv")
-                            email.set("cheroliv.developer@gmail.com")
+                            id.set("cccp-education")
+                            name.set("CCCP Education")
+                            email.set("cccp.education@gmail.com")
                         }
                     }
                     scm {
